@@ -1,0 +1,21 @@
+{
+	"recommendations": [
+		"esbenp.prettier-vscode",
+		"dbaeumer.vscode-eslint",
+		"streetsidesoftware.code-spell-checker",
+		"pkief.material-icon-theme",
+		"mhutchie.git-graph",
+		"usernamehw.errorlens",
+		"yoavbls.pretty-ts-errors",
+		"eamodio.gitlens",
+		"sonarsource.sonarlint-vscode",
+		"vitest.explorer",
+		"anthropic.claude-code",
+		"github.github-vscode-theme",
+		"ms-playwright.playwright",
+		"svelte.svelte-vscode",
+		"bradlc.vscode-tailwindcss",
+		"coderabbit.coderabbit-vscode",
+		"inlang.vs-code-extension"
+	]
+}
