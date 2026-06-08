@@ -3,4 +3,5 @@ import:
   - '@joshuafolkken/game-kit/cspell/game'
 words:
   - waneccha
+  - multicriteria
 ignorePaths: []
