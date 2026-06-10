@@ -1,6 +1,6 @@
 {
 	"name": "waneccha",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"type": "module",
 	"private": true,
 	"scripts": {
@@ -21,7 +21,7 @@
 	},
 	"devDependencies": {
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.1",
-		"@joshuafolkken/game-kit": "^0.151.0",
+		"@joshuafolkken/game-kit": "^0.154.0",
 		"@joshuafolkken/kit": "0.249.0",
 		"@playwright/test": "1.60.0",
 		"@size-limit/file": "^12.1.0",
@@ -58,7 +58,7 @@
 		"vitest-browser-svelte": "^2.1.1",
 		"workbox-build": "^7.4.1",
 		"workbox-window": "^7.4.1",
-		"wrangler": "^4.98.0"
+		"wrangler": "^4.99.0"
 	},
 	"packageManager": "pnpm@11.5.3+sha512.7ac1c919341c213a34dc0d02afb7143c5c26ac26ee8c4782deea821b8ac64d2134a081fd8941dae6e29bbb48f58dfc2b7fbceeccc07cb2f09d219d342a4969ed",
 	"devEngines": {

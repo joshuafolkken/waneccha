@@ -13,3 +13,10 @@
 	src: url('/fonts/Orbitron.ttf') format('truetype');
 	font-display: swap;
 }
+
+/* VT323 (SIL OFL 1.1) — IBM-PC / DOS-style terminal face for the WarGames WOPR UI. */
+@font-face {
+	font-family: 'VT323';
+	src: url('/fonts/VT323.ttf') format('truetype');
+	font-display: swap;
+}
