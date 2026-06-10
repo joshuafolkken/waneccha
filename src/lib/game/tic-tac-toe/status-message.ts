@@ -8,7 +8,12 @@ export type StatusKey = 'your_move' | 'wopr_wins' | 'you_win' | 'draw'
 
 function status_key(status: GameStatus, winner: Mark | null): StatusKey {
 	if (status === 'draw') return 'draw'
-	if (status === 'won') return winner === 'o' ? 'wopr_wins' : 'you_win'
+
+	if (status === 'won') {
+		if (winner === null) throw new Error('winner must be set when status is "won"')
+
+		return winner === 'o' ? 'wopr_wins' : 'you_win'
+	}
 
 	return 'your_move'
 }

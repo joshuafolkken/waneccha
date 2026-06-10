@@ -17,4 +17,8 @@ describe('status_message', () => {
 	it('announces a draw', () => {
 		expect(status_message.status_key('draw', null)).toBe('draw')
 	})
+
+	it('throws on the impossible won-without-winner state', () => {
+		expect(() => status_message.status_key('won', null)).toThrow(/winner/u)
+	})
 })
