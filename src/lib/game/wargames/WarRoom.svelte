@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Room, ROOM_D, ROOM_H, ROOM_W } from '@joshuafolkken/game-kit'
+	import { Player, Room, ROOM_D, ROOM_H, ROOM_W } from '@joshuafolkken/game-kit'
 	import { T } from '@threlte/core'
 	import { interactivity } from '@threlte/extras'
 	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
@@ -8,9 +8,6 @@
 	import CenterScreen from './CenterScreen.svelte'
 	import {
 		AMBIENT_INTENSITY,
-		CAMERA_FOV,
-		CAMERA_Y,
-		CAMERA_Z,
 		CENTER_H,
 		CENTER_POS,
 		CENTER_W,
@@ -33,7 +30,10 @@
 		SCREEN_GLOW_COLOR,
 	} from './wargames-config'
 
-	const CAMERA_POS: [number, number, number] = [0, CAMERA_Y, CAMERA_Z]
+	// Shake the camera when a game finishes (WarGames drama).
+	const is_over = $derived(
+		tic_tac_toe_game.phase === 'playing' && tic_tac_toe_game.status !== 'playing',
+	)
 
 	// Enable pointer raycasting so the tic-tac-toe cells on the center screen are clickable.
 	interactivity()
@@ -48,7 +48,7 @@
 </script>
 
 <T.Color attach="background" args={[SCENE_BG_COLOR]} />
-<T.PerspectiveCamera makeDefault position={CAMERA_POS} fov={CAMERA_FOV} />
+<Player is_gameover={is_over} />
 <T.AmbientLight intensity={AMBIENT_INTENSITY} color={SCREEN_GLOW_COLOR} />
 <T.PointLight position={POINT_POS} intensity={POINT_INTENSITY} color={SCREEN_GLOW_COLOR} />
 
