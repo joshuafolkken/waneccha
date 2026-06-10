@@ -15,25 +15,47 @@ function count_of(text: string, mark: string): number {
 	return total
 }
 
-describe('tic_tac_toe_game match controller', () => {
-	beforeEach(() => {
-		tic_tac_toe_game.to_select()
-	})
-	afterEach(() => {
-		tic_tac_toe_game.to_select()
-	})
+function reset_to_game_list(): void {
+	tic_tac_toe_game.to_game_list()
+}
 
-	it('starts on the selection screen with an empty board', () => {
-		expect(tic_tac_toe_game.phase).toBe('select')
+describe('tic_tac_toe_game navigation', () => {
+	beforeEach(reset_to_game_list)
+	afterEach(reset_to_game_list)
+
+	it('starts on the WOPR game-list screen with an empty board', () => {
+		expect(tic_tac_toe_game.phase).toBe('game_list')
 		expect(tic_tac_toe_game.player_count).toBeNull()
 		expect(tic_tac_toe_game.serialized).toBe(EMPTY)
 	})
 
-	it('ignores plays while on the selection screen', () => {
+	it('opens the player-count selection from the game list', () => {
+		tic_tac_toe_game.open_select()
+
+		expect(tic_tac_toe_game.phase).toBe('select')
+	})
+
+	it('ignores plays before a game has started', () => {
+		tic_tac_toe_game.open_select()
 		tic_tac_toe_game.play(CENTER)
 
 		expect(tic_tac_toe_game.serialized).toBe(EMPTY)
 	})
+
+	it('returns from a game to selection, and from selection to the game list', () => {
+		tic_tac_toe_game.start(1)
+		tic_tac_toe_game.to_select()
+		expect(tic_tac_toe_game.phase).toBe('select')
+
+		tic_tac_toe_game.to_game_list()
+		expect(tic_tac_toe_game.phase).toBe('game_list')
+		expect(tic_tac_toe_game.serialized).toBe(EMPTY)
+	})
+})
+
+describe('tic_tac_toe_game play modes', () => {
+	beforeEach(reset_to_game_list)
+	afterEach(reset_to_game_list)
 
 	it('one player: human x plays and the AI replies with a single o', () => {
 		tic_tac_toe_game.start(1)
@@ -70,13 +92,5 @@ describe('tic_tac_toe_game match controller', () => {
 		}
 
 		expect(tic_tac_toe_game.status).toBe('draw')
-	})
-
-	it('returns to the selection screen', () => {
-		tic_tac_toe_game.start(1)
-		tic_tac_toe_game.to_select()
-
-		expect(tic_tac_toe_game.phase).toBe('select')
-		expect(tic_tac_toe_game.serialized).toBe(EMPTY)
 	})
 })
