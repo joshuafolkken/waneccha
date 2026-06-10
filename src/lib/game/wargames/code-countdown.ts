@@ -1,5 +1,4 @@
 import { draw_helpers, type DisplayDrawer, type ScreenSize } from './draw-helpers'
-import { SCREEN_GLOW_COLOR, TERMINAL_FONT_FAMILY } from './wargames-config'
 
 const CODE_DIGITS = 10
 const CODE_ROWS = 3
@@ -35,10 +34,7 @@ function draw_code_rows(ctx: CanvasRenderingContext2D, size: ScreenSize, t: numb
 	const tick = Math.floor(t * SCRAMBLE_HZ)
 	const font_size = size.h * DIGIT_FONT_SCALE
 
-	ctx.font = `${String(font_size)}px ${TERMINAL_FONT_FAMILY}, monospace`
-	ctx.fillStyle = SCREEN_GLOW_COLOR
-	ctx.globalAlpha = CODE_ALPHA
-	ctx.textBaseline = 'middle'
+	draw_helpers.set_text(ctx, font_size, CODE_ALPHA, 'middle')
 
 	for (let row = 0; row < CODE_ROWS; row++) {
 		const y = size.h * (CODE_ROW_TOP + row * CODE_ROW_STEP)
@@ -60,10 +56,7 @@ function format_timer(t: number): string {
 function draw_timer(ctx: CanvasRenderingContext2D, size: ScreenSize, t: number): void {
 	const font_size = size.h * TIMER_FONT_SCALE
 
-	ctx.font = `${String(font_size)}px ${TERMINAL_FONT_FAMILY}, monospace`
-	ctx.fillStyle = SCREEN_GLOW_COLOR
-	ctx.globalAlpha = FULL_ALPHA
-	ctx.textBaseline = 'middle'
+	draw_helpers.set_text(ctx, font_size, FULL_ALPHA, 'middle')
 	ctx.fillText(format_timer(t), size.w * TIMER_X, size.h * TIMER_Y)
 }
 

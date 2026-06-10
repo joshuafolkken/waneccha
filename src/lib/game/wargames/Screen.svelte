@@ -17,7 +17,24 @@
 	const { position, rotation_y = 0, width, height, children }: Props = $props()
 
 	// A translucent glass face with a glowing wire border framing the screen content.
-	const edges = $derived(new EdgesGeometry(new PlaneGeometry(width, height)))
+	// EdgesGeometry copies the source, so the intermediate PlaneGeometry is freed immediately.
+	const edges = $derived.by(() => {
+		const source = new PlaneGeometry(width, height)
+		const geometry = new EdgesGeometry(source)
+
+		source.dispose()
+
+		return geometry
+	})
+
+	// Dispose the border geometry when it is rebuilt (dimension change) or on unmount.
+	$effect(() => {
+		const current = edges
+
+		return () => {
+			current.dispose()
+		}
+	})
 </script>
 
 <T.Group {position} rotation.y={rotation_y}>

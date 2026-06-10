@@ -27,19 +27,30 @@ function set_glow(ctx: CanvasRenderingContext2D, alpha: number): void {
 	ctx.globalAlpha = alpha
 }
 
+// Shared terminal-text setup (glow color + font face) so font family / glow live in one place.
+function set_text(
+	ctx: CanvasRenderingContext2D,
+	font_size: number,
+	alpha: number,
+	baseline: CanvasTextBaseline,
+): void {
+	ctx.font = `${String(font_size)}px ${TERMINAL_FONT_FAMILY}, monospace`
+	ctx.fillStyle = SCREEN_GLOW_COLOR
+	ctx.globalAlpha = alpha
+	ctx.textBaseline = baseline
+}
+
 function draw_label(ctx: CanvasRenderingContext2D, size: ScreenSize, text: string): void {
 	const font_size = size.h * LABEL_FONT_SCALE
 	const pad = font_size * LABEL_PAD_SCALE
 
-	ctx.globalAlpha = FULL_ALPHA
-	ctx.fillStyle = SCREEN_GLOW_COLOR
-	ctx.font = `${String(font_size)}px ${TERMINAL_FONT_FAMILY}, monospace`
-	ctx.textBaseline = 'top'
+	set_text(ctx, font_size, FULL_ALPHA, 'top')
 	ctx.fillText(text, pad, pad)
 }
 
 export const draw_helpers = {
 	clear_screen,
 	set_glow,
+	set_text,
 	draw_label,
 }

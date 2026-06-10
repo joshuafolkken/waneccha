@@ -1,8 +1,10 @@
 import { side_display_cycle, type SideDisplayId } from './side-display-cycle'
 import { SIDE_CYCLE_INTERVAL_MS } from './wargames-config'
 
-// Right screen is offset so the two side screens never show the same display at once.
-const RIGHT_OFFSET = 2
+// Right screen is offset half the cycle so the two side screens never show the same display
+// at once — derived from the display count rather than hard-coded to the current list length.
+const SIDE_SCREENS = 2
+const RIGHT_OFFSET = Math.floor(side_display_cycle.display_count() / SIDE_SCREENS)
 
 interface SideDisplayState {
 	readonly left_id: SideDisplayId
