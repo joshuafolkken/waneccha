@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { device, GameScene } from '@joshuafolkken/game-kit'
+	import { ALL_PLAYER_COUNTS } from '$lib/game/tic-tac-toe/game-mode'
 	import { CELL_INDICES } from '$lib/game/tic-tac-toe/tic-tac-toe'
 	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
 	import { side_display_state } from '$lib/game/wargames/SideDisplayState.svelte'
@@ -39,7 +40,21 @@
 		data-cells={tic_tac_toe_game.serialized}
 		data-status={tic_tac_toe_game.status}
 		data-winner={tic_tac_toe_game.winner ?? ''}
+		data-phase={tic_tac_toe_game.phase}
+		data-player-count={tic_tac_toe_game.player_count ?? ''}
 	></p>
+	{#each ALL_PLAYER_COUNTS as count (count)}
+		<button
+			type="button"
+			data-testid="select-{count}"
+			aria-label="{messages.ttt_select_label}: {count}"
+			onclick={() => {
+				tic_tac_toe_game.start(count)
+			}}
+		>
+			{count}
+		</button>
+	{/each}
 	{#each CELL_INDICES as index (index)}
 		<button
 			type="button"
@@ -60,6 +75,15 @@
 		}}
 	>
 		{messages.ttt_reset}
+	</button>
+	<button
+		type="button"
+		data-testid="ttt-back"
+		onclick={() => {
+			tic_tac_toe_game.to_select()
+		}}
+	>
+		{messages.ttt_back}
 	</button>
 </section>
 

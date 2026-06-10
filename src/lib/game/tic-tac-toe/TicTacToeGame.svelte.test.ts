@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { tic_tac_toe_game } from './TicTacToeGame.svelte'
 
 const EMPTY = '.........'
 const CENTER = 4
+const MAX_MOVES = 9
 
 function count_of(text: string, mark: string): number {
 	let total = 0
@@ -14,18 +15,30 @@ function count_of(text: string, mark: string): number {
 	return total
 }
 
-describe('tic_tac_toe_game store', () => {
+describe('tic_tac_toe_game match controller', () => {
 	beforeEach(() => {
-		tic_tac_toe_game.reset()
+		tic_tac_toe_game.to_select()
+	})
+	afterEach(() => {
+		tic_tac_toe_game.to_select()
 	})
 
-	it('starts empty with the human (x) to move', () => {
+	it('starts on the selection screen with an empty board', () => {
+		expect(tic_tac_toe_game.phase).toBe('select')
+		expect(tic_tac_toe_game.player_count).toBeNull()
 		expect(tic_tac_toe_game.serialized).toBe(EMPTY)
-		expect(tic_tac_toe_game.current).toBe('x')
-		expect(tic_tac_toe_game.status).toBe('playing')
 	})
 
-	it('places x and the AI replies with a single o, returning the turn to the human', () => {
+	it('ignores plays while on the selection screen', () => {
+		tic_tac_toe_game.play(CENTER)
+
+		expect(tic_tac_toe_game.serialized).toBe(EMPTY)
+	})
+
+	it('one player: human x plays and the AI replies with a single o', () => {
+		tic_tac_toe_game.start(1)
+		expect(tic_tac_toe_game.phase).toBe('playing')
+
 		tic_tac_toe_game.play(CENTER)
 		const { serialized } = tic_tac_toe_game
 
@@ -35,19 +48,35 @@ describe('tic_tac_toe_game store', () => {
 		expect(tic_tac_toe_game.current).toBe('x')
 	})
 
-	it('ignores a play on an occupied cell', () => {
-		tic_tac_toe_game.play(0)
-		const after_first = tic_tac_toe_game.serialized
+	it('two players: no AI reply — turns alternate between humans', () => {
+		tic_tac_toe_game.start(2)
 
 		tic_tac_toe_game.play(0)
+		expect(count_of(tic_tac_toe_game.serialized, 'o')).toBe(0)
+		expect(tic_tac_toe_game.current).toBe('o')
 
-		expect(tic_tac_toe_game.serialized).toBe(after_first)
+		tic_tac_toe_game.play(1)
+		expect(tic_tac_toe_game.current).toBe('x')
 	})
 
-	it('resets the board to empty', () => {
-		tic_tac_toe_game.play(0)
-		tic_tac_toe_game.reset()
+	it('self-play (0): stepping both AI marks reaches a drawn game', () => {
+		tic_tac_toe_game.start(0)
 
+		let guard = 0
+
+		while (tic_tac_toe_game.status === 'playing' && guard < MAX_MOVES) {
+			tic_tac_toe_game.ai_step()
+			guard += 1
+		}
+
+		expect(tic_tac_toe_game.status).toBe('draw')
+	})
+
+	it('returns to the selection screen', () => {
+		tic_tac_toe_game.start(1)
+		tic_tac_toe_game.to_select()
+
+		expect(tic_tac_toe_game.phase).toBe('select')
 		expect(tic_tac_toe_game.serialized).toBe(EMPTY)
 	})
 })
