@@ -1,70 +1,114 @@
 import { game_flow, type GameSnapshot, type GameStatus } from './game-flow'
+import { game_mode, type PlayerCount } from './game-mode'
 import { minimax } from './minimax'
 import type { Board, Mark } from './tic-tac-toe'
 
 const EMPTY_CELL = '.'
 const NO_MOVE = -1
-const HUMAN_MARK: Mark = 'x'
-const AI_MARK: Mark = 'o'
+// Pace between self-play moves. Kept well under the self-play E2E budget
+// (player-select.e2e.ts) so 9 moves finish comfortably within its timeout.
+const SELF_PLAY_DELAY_MS = 350
 
-// Reactive tic-tac-toe store. Human (x) vs the perfect AI (o); the AI replies synchronously
-// after each human move. Player-count modes (self-play / two-player) arrive in a later issue.
-interface TicTacToeGame {
-	readonly board: Board
-	readonly status: GameStatus
-	readonly winner: Mark | null
-	readonly current: Mark
-	readonly serialized: string
-	play: (index: number) => void
-	reset: () => void
+export type GamePhase = 'select' | 'playing'
+
+// Reactive match controller. `player_count === null` is the WarGames "HOW MANY PLAYERS"
+// selection screen. 1 = human (x) vs perfect AI (o), 2 = two humans, 0 = AI self-play (the
+// WOPR auto-match), stepped on a timer so the moves are watchable.
+let snapshot = $state<GameSnapshot>(game_flow.initial_snapshot())
+let player_count = $state<PlayerCount | null>(null)
+let self_play_timer: ReturnType<typeof setTimeout> | null = null
+
+function is_ai_turn(): boolean {
+	return player_count !== null && game_mode.is_ai_mark(player_count, snapshot.current)
 }
 
-function create_tic_tac_toe_game(): TicTacToeGame {
-	let snapshot = $state<GameSnapshot>(game_flow.initial_snapshot())
+function clear_timer(): void {
+	if (self_play_timer === null) return
 
-	function ai_step(): void {
-		if (snapshot.status !== 'playing' || snapshot.current !== AI_MARK) return
-
-		const move = minimax.best_move(snapshot.board, AI_MARK)
-
-		if (move !== NO_MOVE) snapshot = game_flow.play_at(snapshot, move)
-	}
-
-	function play(index: number): void {
-		if (snapshot.current !== HUMAN_MARK) return
-
-		const before = snapshot
-
-		snapshot = game_flow.play_at(snapshot, index)
-
-		if (snapshot !== before) ai_step()
-	}
-
-	function reset(): void {
-		snapshot = game_flow.initial_snapshot()
-	}
-
-	return {
-		get board(): Board {
-			return snapshot.board
-		},
-		get status(): GameStatus {
-			return snapshot.status
-		},
-		get winner(): Mark | null {
-			return snapshot.winner
-		},
-		get current(): Mark {
-			return snapshot.current
-		},
-		get serialized(): string {
-			return snapshot.board.map((cell) => cell ?? EMPTY_CELL).join('')
-		},
-		play,
-		reset,
-	}
+	clearTimeout(self_play_timer)
+	self_play_timer = null
 }
 
-const tic_tac_toe_game = create_tic_tac_toe_game()
+function ai_step(): void {
+	if (snapshot.status !== 'playing' || !is_ai_turn()) return
 
-export { tic_tac_toe_game }
+	const move = minimax.best_move(snapshot.board, snapshot.current)
+
+	if (move !== NO_MOVE) snapshot = game_flow.play_at(snapshot, move)
+}
+
+function schedule_self_play(): void {
+	clear_timer()
+
+	if (player_count === null || !game_mode.is_self_play(player_count)) return
+	if (snapshot.status !== 'playing') return
+
+	self_play_timer = setTimeout(() => {
+		ai_step()
+		schedule_self_play()
+	}, SELF_PLAY_DELAY_MS)
+}
+
+function start(count: PlayerCount): void {
+	clear_timer()
+	player_count = count
+	snapshot = game_flow.initial_snapshot()
+	schedule_self_play()
+}
+
+function play(index: number): void {
+	if (player_count === null || is_ai_turn()) return
+
+	const before = snapshot
+
+	snapshot = game_flow.play_at(snapshot, index)
+
+	if (snapshot !== before && is_ai_turn()) ai_step()
+}
+
+function reset(): void {
+	clear_timer()
+	snapshot = game_flow.initial_snapshot()
+	schedule_self_play()
+}
+
+function to_select(): void {
+	clear_timer()
+	player_count = null
+	snapshot = game_flow.initial_snapshot()
+}
+
+// Cancel any pending self-play timer without otherwise changing state — for component teardown.
+function stop(): void {
+	clear_timer()
+}
+
+export const tic_tac_toe_game = {
+	get board(): Board {
+		return snapshot.board
+	},
+	get status(): GameStatus {
+		return snapshot.status
+	},
+	get winner(): Mark | null {
+		return snapshot.winner
+	},
+	get current(): Mark {
+		return snapshot.current
+	},
+	get serialized(): string {
+		return snapshot.board.map((cell) => cell ?? EMPTY_CELL).join('')
+	},
+	get phase(): GamePhase {
+		return player_count === null ? 'select' : 'playing'
+	},
+	get player_count(): PlayerCount | null {
+		return player_count
+	},
+	start,
+	play,
+	ai_step,
+	reset,
+	to_select,
+	stop,
+}

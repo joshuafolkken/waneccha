@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
 const EMPTY_BOARD = '.........'
 const DATA_CELLS = 'data-cells'
@@ -13,8 +13,13 @@ function count_of(text: string, mark: string): number {
 	return total
 }
 
-test('the board renders empty and waiting for the human move', async ({ page }) => {
+async function start_one_player(page: Page): Promise<void> {
 	await page.goto('/')
+	await page.getByTestId('select-1').dispatchEvent('click')
+}
+
+test('one-player game starts with an empty board, human to move', async ({ page }) => {
+	await start_one_player(page)
 	const board = page.getByTestId('ttt-board')
 
 	await expect(board).toHaveAttribute(DATA_CELLS, EMPTY_BOARD)
@@ -22,7 +27,7 @@ test('the board renders empty and waiting for the human move', async ({ page }) 
 })
 
 test('playing a cell places x and the AI responds with o', async ({ page }) => {
-	await page.goto('/')
+	await start_one_player(page)
 	const board = page.getByTestId('ttt-board')
 
 	await page.getByTestId('ttt-cell-4').dispatchEvent('click')
@@ -32,12 +37,11 @@ test('playing a cell places x and the AI responds with o', async ({ page }) => {
 
 	expect(cells.charAt(4)).toBe('x')
 	expect(count_of(cells, 'x')).toBe(1)
-	// The perfect AI replies synchronously, so exactly one o appears after a single human move.
 	expect(count_of(cells, 'o')).toBe(1)
 })
 
 test('new game resets the board', async ({ page }) => {
-	await page.goto('/')
+	await start_one_player(page)
 	const board = page.getByTestId('ttt-board')
 
 	await page.getByTestId('ttt-cell-0').dispatchEvent('click')

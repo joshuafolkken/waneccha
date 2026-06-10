@@ -3,22 +3,24 @@ import { status_message } from './status-message'
 
 describe('status_message', () => {
 	it('asks for the human move while playing', () => {
-		expect(status_message.status_key('playing', null)).toBe('your_move')
+		expect(status_message.status_key('playing', null, 1)).toBe('your_move')
 	})
 
-	it('announces a WOPR win when the AI (o) wins', () => {
-		expect(status_message.status_key('won', 'o')).toBe('wopr_wins')
+	it('one player: frames wins as human vs WOPR', () => {
+		expect(status_message.status_key('won', 'o', 1)).toBe('wopr_wins')
+		expect(status_message.status_key('won', 'x', 1)).toBe('you_win')
 	})
 
-	it('announces a human win when x wins', () => {
-		expect(status_message.status_key('won', 'x')).toBe('you_win')
+	it('two players: uses neutral mark wins', () => {
+		expect(status_message.status_key('won', 'x', 2)).toBe('x_wins')
+		expect(status_message.status_key('won', 'o', 2)).toBe('o_wins')
 	})
 
 	it('announces a draw', () => {
-		expect(status_message.status_key('draw', null)).toBe('draw')
+		expect(status_message.status_key('draw', null, 1)).toBe('draw')
 	})
 
 	it('throws on the impossible won-without-winner state', () => {
-		expect(() => status_message.status_key('won', null)).toThrow(/winner/u)
+		expect(() => status_message.status_key('won', null, 1)).toThrow(/winner/u)
 	})
 })

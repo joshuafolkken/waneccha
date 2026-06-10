@@ -2,6 +2,7 @@
 	import { Room, ROOM_D, ROOM_H, ROOM_W } from '@joshuafolkken/game-kit'
 	import { T } from '@threlte/core'
 	import { interactivity } from '@threlte/extras'
+	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
 	import { messages } from '$lib/messages'
 	import { onDestroy, onMount } from 'svelte'
 	import CenterScreen from './CenterScreen.svelte'
@@ -42,6 +43,7 @@
 	})
 	onDestroy(() => {
 		side_display_state.stop()
+		tic_tac_toe_game.stop()
 	})
 </script>
 

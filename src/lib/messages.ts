@@ -9,10 +9,18 @@ const game_messages = {
 	ttt_your_move: 'YOUR MOVE',
 	ttt_wopr_wins: 'WOPR WINS',
 	ttt_you_win: 'YOU WIN',
+	ttt_x_wins: 'X WINS',
+	ttt_o_wins: 'O WINS',
 	ttt_draw: 'DRAW',
 	ttt_reset: 'NEW GAME',
 	ttt_controls_label: 'Tic-tac-toe board',
 	ttt_cell_label: 'Play cell',
+	ttt_prompt: 'SHALL WE PLAY A GAME?',
+	ttt_select_0: '0 — WOPR VS WOPR',
+	ttt_select_1: '1 — VS WOPR',
+	ttt_select_2: '2 — PLAYERS',
+	ttt_select_label: 'How many players',
+	ttt_back: 'BACK',
 } as const
 
 const messages = { ...base_messages, ...game_messages } as const
