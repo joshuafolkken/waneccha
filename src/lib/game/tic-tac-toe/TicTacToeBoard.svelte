@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { T } from '@threlte/core'
+	import ClickPlane from '$lib/game/wargames/ClickPlane.svelte'
 	import { SCREEN_GLOW_COLOR } from '$lib/game/wargames/wargames-config'
-	import { DoubleSide } from 'three'
 	import { BOARD_EXTENT, board_layout, CELL_SIZE } from './board-layout'
 	import Mark from './Mark.svelte'
 	import { CELL_INDICES } from './tic-tac-toe'
@@ -31,15 +31,15 @@
 	{#each CELL_INDICES as index (index)}
 		{@const position = board_layout.cell_position(index)}
 		{@const cell = tic_tac_toe_game.board[index] ?? null}
-		<T.Mesh
-			position={[position[0], position[1], 0]}
-			onpointerdown={() => {
-				tic_tac_toe_game.play(index)
-			}}
-		>
-			<T.PlaneGeometry args={[CELL_SIZE, CELL_SIZE]} />
-			<T.MeshBasicMaterial transparent opacity={0} side={DoubleSide} />
-		</T.Mesh>
+		<T.Group position={[position[0], position[1], 0]}>
+			<ClickPlane
+				width={CELL_SIZE}
+				height={CELL_SIZE}
+				onpress={() => {
+					tic_tac_toe_game.play(index)
+				}}
+			/>
+		</T.Group>
 		{#if cell !== null}
 			<T.Group position={[position[0], position[1], MARK_Z]}>
 				<Mark mark={cell} size={CELL_SIZE} />
