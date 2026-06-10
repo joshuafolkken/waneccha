@@ -42,6 +42,8 @@
 		data-winner={tic_tac_toe_game.winner ?? ''}
 		data-phase={tic_tac_toe_game.phase}
 		data-player-count={tic_tac_toe_game.player_count ?? ''}
+		data-variant={tic_tac_toe_game.variant}
+		data-pending={tic_tac_toe_game.pending_removal}
 	></p>
 	<button
 		type="button"
@@ -52,6 +54,26 @@
 		}}
 	>
 		{messages.wopr_board_title}
+	</button>
+	<button
+		type="button"
+		data-testid="variant-classic"
+		aria-label={messages.ttt_variant_classic_label}
+		onclick={() => {
+			tic_tac_toe_game.set_variant('classic')
+		}}
+	>
+		{messages.ttt_mode_classic}
+	</button>
+	<button
+		type="button"
+		data-testid="variant-infinite"
+		aria-label={messages.ttt_variant_infinite_label}
+		onclick={() => {
+			tic_tac_toe_game.set_variant('infinite')
+		}}
+	>
+		{messages.ttt_mode_infinite}
 	</button>
 	{#each ALL_PLAYER_COUNTS as count (count)}
 		<button
