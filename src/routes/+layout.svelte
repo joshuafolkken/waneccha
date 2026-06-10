@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css'
 	import {
+		crt,
 		game_state,
 		loading,
 		OVERLAY_ELEMENT_ID,
@@ -27,6 +28,8 @@
 	})
 	switch_audio.init(CLICK_SOUND_URL)
 	game_state.set_alt(true)
+	// Start with the CRT/RETRO post-process off for a clean, readable WarGames view.
+	if (crt.is_crt_enabled) crt.toggle()
 	loading.set_step('initializing')
 
 	$effect(() => {
