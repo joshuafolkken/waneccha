@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Room, ROOM_D, ROOM_H, ROOM_W } from '@joshuafolkken/game-kit'
 	import { T } from '@threlte/core'
+	import { interactivity } from '@threlte/extras'
 	import { messages } from '$lib/messages'
 	import { onDestroy, onMount } from 'svelte'
 	import CenterScreen from './CenterScreen.svelte'
@@ -33,6 +34,9 @@
 
 	const CAMERA_POS: [number, number, number] = [0, CAMERA_Y, CAMERA_Z]
 
+	// Enable pointer raycasting so the tic-tac-toe cells on the center screen are clickable.
+	interactivity()
+
 	onMount(() => {
 		side_display_state.start()
 	})
@@ -56,7 +60,7 @@
 />
 
 <Screen position={CENTER_POS} width={CENTER_W} height={CENTER_H}>
-	<CenterScreen title={messages.wopr_board_title} subtitle={messages.wopr_board_standby} />
+	<CenterScreen title={messages.wopr_board_title} />
 </Screen>
 
 <Screen position={LEFT_POS} rotation_y={SIDE_ROT} width={SIDE_W} height={SIDE_H}>

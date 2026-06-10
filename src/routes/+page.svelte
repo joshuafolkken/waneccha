@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { device, GameScene } from '@joshuafolkken/game-kit'
+	import { CELL_INDICES } from '$lib/game/tic-tac-toe/tic-tac-toe'
+	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
 	import { side_display_state } from '$lib/game/wargames/SideDisplayState.svelte'
 	import WarRoom from '$lib/game/wargames/WarRoom.svelte'
 	import { messages } from '$lib/messages'
@@ -28,6 +30,38 @@
 	data-right-id={side_display_state.right_id}
 	aria-hidden="true"
 ></div>
+
+<!-- Accessible fallback controls for the 3D tic-tac-toe board: keyboard/screen-reader play
+     plus stable selectors for E2E (the WebGL cells handle pointer input). -->
+<section class="sr-only" aria-label={messages.ttt_controls_label}>
+	<p
+		data-testid="ttt-board"
+		data-cells={tic_tac_toe_game.serialized}
+		data-status={tic_tac_toe_game.status}
+		data-winner={tic_tac_toe_game.winner ?? ''}
+	></p>
+	{#each CELL_INDICES as index (index)}
+		<button
+			type="button"
+			data-testid="ttt-cell-{index}"
+			aria-label="{messages.ttt_cell_label} {index + 1}"
+			onclick={() => {
+				tic_tac_toe_game.play(index)
+			}}
+		>
+			{index + 1}
+		</button>
+	{/each}
+	<button
+		type="button"
+		data-testid="ttt-reset"
+		onclick={() => {
+			tic_tac_toe_game.reset()
+		}}
+	>
+		{messages.ttt_reset}
+	</button>
+</section>
 
 <style>
 	.sr-only {
