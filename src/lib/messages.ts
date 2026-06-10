@@ -15,6 +15,8 @@ const game_messages = {
 	ttt_reset: 'NEW GAME',
 	ttt_controls_label: 'Tic-tac-toe board',
 	ttt_cell_label: 'Play cell',
+	ttt_games_header: 'GAMES',
+	ttt_select_game_label: 'Select game',
 	ttt_prompt: 'SHALL WE PLAY A GAME?',
 	ttt_select_0: '0 — WOPR VS WOPR',
 	ttt_select_1: '1 — VS WOPR',

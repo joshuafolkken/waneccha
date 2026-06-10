@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
 const SELF_PLAY_TIMEOUT_MS = 15_000
 const DATA_CELLS = 'data-cells'
@@ -17,8 +17,13 @@ function count_of(text: string, mark: string): number {
 	return total
 }
 
-test('the player-count selection screen is shown by default', async ({ page }) => {
+async function open_select(page: Page): Promise<void> {
 	await page.goto('/')
+	await page.getByTestId('game-ttt').dispatchEvent('click')
+}
+
+test('selecting TIC-TAC-TOE opens the player-count screen', async ({ page }) => {
+	await open_select(page)
 	const board = page.getByTestId('ttt-board')
 
 	await expect(board).toHaveAttribute(DATA_PHASE, PHASE_SELECT)
@@ -26,7 +31,7 @@ test('the player-count selection screen is shown by default', async ({ page }) =
 })
 
 test('choosing one player starts a playable game', async ({ page }) => {
-	await page.goto('/')
+	await open_select(page)
 	const board = page.getByTestId('ttt-board')
 
 	await page.getByTestId('select-1').dispatchEvent('click')
@@ -36,7 +41,7 @@ test('choosing one player starts a playable game', async ({ page }) => {
 })
 
 test('two-player mode alternates human marks with no AI reply', async ({ page }) => {
-	await page.goto('/')
+	await open_select(page)
 	const board = page.getByTestId('ttt-board')
 
 	await page.getByTestId('select-2').dispatchEvent('click')
@@ -54,7 +59,7 @@ test('two-player mode alternates human marks with no AI reply', async ({ page })
 })
 
 test('self-play (0 players) runs autonomously to a finished game', async ({ page }) => {
-	await page.goto('/')
+	await open_select(page)
 	const board = page.getByTestId('ttt-board')
 
 	await page.getByTestId('select-0').dispatchEvent('click')
@@ -63,8 +68,8 @@ test('self-play (0 players) runs autonomously to a finished game', async ({ page
 	await expect(board).toHaveAttribute('data-status', 'draw', { timeout: SELF_PLAY_TIMEOUT_MS })
 })
 
-test('back returns to the selection screen', async ({ page }) => {
-	await page.goto('/')
+test('back steps from a game to selection to the game list', async ({ page }) => {
+	await open_select(page)
 	const board = page.getByTestId('ttt-board')
 
 	await page.getByTestId('select-1').dispatchEvent('click')
@@ -72,4 +77,7 @@ test('back returns to the selection screen', async ({ page }) => {
 
 	await page.getByTestId('ttt-back').dispatchEvent('click')
 	await expect(board).toHaveAttribute(DATA_PHASE, PHASE_SELECT)
+
+	await page.getByTestId('ttt-to-list').dispatchEvent('click')
+	await expect(board).toHaveAttribute(DATA_PHASE, 'game_list')
 })

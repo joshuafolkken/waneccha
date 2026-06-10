@@ -43,6 +43,16 @@
 		data-phase={tic_tac_toe_game.phase}
 		data-player-count={tic_tac_toe_game.player_count ?? ''}
 	></p>
+	<button
+		type="button"
+		data-testid="game-ttt"
+		aria-label={messages.ttt_select_game_label}
+		onclick={() => {
+			tic_tac_toe_game.open_select()
+		}}
+	>
+		{messages.wopr_board_title}
+	</button>
 	{#each ALL_PLAYER_COUNTS as count (count)}
 		<button
 			type="button"
@@ -84,6 +94,15 @@
 		}}
 	>
 		{messages.ttt_back}
+	</button>
+	<button
+		type="button"
+		data-testid="ttt-to-list"
+		onclick={() => {
+			tic_tac_toe_game.to_game_list()
+		}}
+	>
+		{messages.ttt_games_header}
 	</button>
 </section>
 

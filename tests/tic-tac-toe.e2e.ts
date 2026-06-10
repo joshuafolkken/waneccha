@@ -15,6 +15,7 @@ function count_of(text: string, mark: string): number {
 
 async function start_one_player(page: Page): Promise<void> {
 	await page.goto('/')
+	await page.getByTestId('game-ttt').dispatchEvent('click')
 	await page.getByTestId('select-1').dispatchEvent('click')
 }
 
