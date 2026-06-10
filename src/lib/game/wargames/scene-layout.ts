@@ -1,9 +1,5 @@
-// World-space layout for the WarGames control room. The fixed camera sits behind the
-// "click to start" backdrop (z ≈ 1.55) and looks down -Z at the three screens.
-
-export const CAMERA_Y = 1.6
-export const CAMERA_Z = 2.6
-export const CAMERA_FOV = 60
+// World-space layout for the WarGames control room. The first-person Player camera spawns
+// behind the "click to start" backdrop and looks down -Z at the three screens.
 
 const SCREEN_Y = 1.6
 
