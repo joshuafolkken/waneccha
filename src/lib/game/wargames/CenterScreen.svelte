@@ -7,6 +7,7 @@
 	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
 	import { messages } from '$lib/messages'
 	import ClickPlane from './ClickPlane.svelte'
+	import GameList from './GameList.svelte'
 	import { CONTENT_Z_OFFSET } from './scene-layout'
 	import { SCREEN_GLOW_COLOR, TERMINAL_FONT_URL } from './wargames-config'
 
@@ -26,7 +27,13 @@
 	const BACK_H = 0.16
 	const BACK_TEXT_Z = 0.01
 
-	const is_playing = $derived(tic_tac_toe_game.phase === 'playing')
+	const phase = $derived(tic_tac_toe_game.phase)
+
+	// Back steps one screen: a game returns to player-count select, select returns to the list.
+	function go_back(): void {
+		if (phase === 'playing') tic_tac_toe_game.to_select()
+		else tic_tac_toe_game.to_game_list()
+	}
 
 	const STATUS_LABELS: Record<StatusKey, string> = {
 		your_move: messages.ttt_your_move,
@@ -49,34 +56,35 @@
 </script>
 
 <T.Group position.z={CONTENT_Z_OFFSET}>
-	<Text
-		text={title}
-		font={TERMINAL_FONT_URL}
-		fontSize={TITLE_SIZE}
-		color={SCREEN_GLOW_COLOR}
-		anchorX="center"
-		anchorY="middle"
-		position.y={TITLE_Y}
-	/>
-	{#if is_playing}
-		<TicTacToeBoard />
+	{#if phase === 'game_list'}
+		<GameList />
+	{:else}
 		<Text
-			text={status_text}
+			text={title}
 			font={TERMINAL_FONT_URL}
-			fontSize={STATUS_SIZE}
+			fontSize={TITLE_SIZE}
 			color={SCREEN_GLOW_COLOR}
 			anchorX="center"
 			anchorY="middle"
-			position.y={STATUS_Y}
+			position.y={TITLE_Y}
 		/>
-		<T.Group position.y={BACK_Y}>
-			<ClickPlane
-				width={BACK_W}
-				height={BACK_H}
-				onpress={() => {
-					tic_tac_toe_game.to_select()
-				}}
+		{#if phase === 'playing'}
+			<TicTacToeBoard />
+			<Text
+				text={status_text}
+				font={TERMINAL_FONT_URL}
+				fontSize={STATUS_SIZE}
+				color={SCREEN_GLOW_COLOR}
+				anchorX="center"
+				anchorY="middle"
+				position.y={STATUS_Y}
 			/>
+		{:else}
+			<SelectScreen />
+		{/if}
+		<!-- Back affordance, shared by the select and playing screens (target chosen by phase). -->
+		<T.Group position.y={BACK_Y}>
+			<ClickPlane width={BACK_W} height={BACK_H} onpress={go_back} />
 			<Text
 				text={messages.ttt_back}
 				font={TERMINAL_FONT_URL}
@@ -87,7 +95,5 @@
 				position.z={BACK_TEXT_Z}
 			/>
 		</T.Group>
-	{:else}
-		<SelectScreen />
 	{/if}
 </T.Group>

@@ -9,13 +9,14 @@ const NO_MOVE = -1
 // (player-select.e2e.ts) so 9 moves finish comfortably within its timeout.
 const SELF_PLAY_DELAY_MS = 350
 
-export type GamePhase = 'select' | 'playing'
+export type GamePhase = 'game_list' | 'select' | 'playing'
 
-// Reactive match controller. `player_count === null` is the WarGames "HOW MANY PLAYERS"
-// selection screen. 1 = human (x) vs perfect AI (o), 2 = two humans, 0 = AI self-play (the
+// Reactive match controller. Screens: 'game_list' (the WOPR roster) → 'select' (HOW MANY
+// PLAYERS) → 'playing'. 1 = human (x) vs perfect AI (o), 2 = two humans, 0 = AI self-play (the
 // WOPR auto-match), stepped on a timer so the moves are watchable.
 let snapshot = $state<GameSnapshot>(game_flow.initial_snapshot())
 let player_count = $state<PlayerCount | null>(null)
+let screen = $state<GamePhase>('game_list')
 let self_play_timer: ReturnType<typeof setTimeout> | null = null
 
 function is_ai_turn(): boolean {
@@ -49,15 +50,33 @@ function schedule_self_play(): void {
 	}, SELF_PLAY_DELAY_MS)
 }
 
-function start(count: PlayerCount): void {
+// Reset to a fresh board on the given screen, cancelling any running self-play.
+function go_to(target: GamePhase, count: PlayerCount | null): void {
 	clear_timer()
+	screen = target
 	player_count = count
 	snapshot = game_flow.initial_snapshot()
+}
+
+function open_select(): void {
+	go_to('select', null)
+}
+
+function to_game_list(): void {
+	go_to('game_list', null)
+}
+
+function to_select(): void {
+	go_to('select', null)
+}
+
+function start(count: PlayerCount): void {
+	go_to('playing', count)
 	schedule_self_play()
 }
 
 function play(index: number): void {
-	if (player_count === null || is_ai_turn()) return
+	if (screen !== 'playing' || is_ai_turn()) return
 
 	const before = snapshot
 
@@ -70,12 +89,6 @@ function reset(): void {
 	clear_timer()
 	snapshot = game_flow.initial_snapshot()
 	schedule_self_play()
-}
-
-function to_select(): void {
-	clear_timer()
-	player_count = null
-	snapshot = game_flow.initial_snapshot()
 }
 
 // Cancel any pending self-play timer without otherwise changing state — for component teardown.
@@ -100,15 +113,17 @@ export const tic_tac_toe_game = {
 		return snapshot.board.map((cell) => cell ?? EMPTY_CELL).join('')
 	},
 	get phase(): GamePhase {
-		return player_count === null ? 'select' : 'playing'
+		return screen
 	},
 	get player_count(): PlayerCount | null {
 		return player_count
 	},
+	open_select,
+	to_game_list,
+	to_select,
 	start,
 	play,
 	ai_step,
 	reset,
-	to_select,
 	stop,
 }
