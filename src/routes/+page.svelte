@@ -5,6 +5,7 @@
 	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
 	import { side_display_state } from '$lib/game/wargames/SideDisplayState.svelte'
 	import WarRoom from '$lib/game/wargames/WarRoom.svelte'
+	import WoprAudio from '$lib/game/wargames/WoprAudio.svelte'
 	import { messages } from '$lib/messages'
 
 	const hint_text = $derived(
@@ -21,6 +22,8 @@
 >
 	<WarRoom />
 </GameScene>
+
+<WoprAudio />
 
 <!-- Accessible, visually-hidden mirror of the cycling side displays. Lets E2E assert the
      foundation renders and the displays cycle without inspecting WebGL pixels. -->
