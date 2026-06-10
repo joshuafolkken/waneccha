@@ -11,6 +11,8 @@
 	const GRID_DEPTH = 0.005
 	const GRID_Z = 0.01
 	const MARK_Z = 0.03
+	const PENDING_OPACITY = 0.35
+	const FULL_OPACITY = 1
 	const HALF_DIVISOR = 2
 	const DIVIDER_OFFSET = CELL_SIZE / HALF_DIVISOR
 	const dividers = [-DIVIDER_OFFSET, DIVIDER_OFFSET]
@@ -42,7 +44,11 @@
 		</T.Group>
 		{#if cell !== null}
 			<T.Group position={[position[0], position[1], MARK_Z]}>
-				<Mark mark={cell} size={CELL_SIZE} />
+				<Mark
+					mark={cell}
+					size={CELL_SIZE}
+					opacity={index === tic_tac_toe_game.pending_removal ? PENDING_OPACITY : FULL_OPACITY}
+				/>
 			</T.Group>
 		{/if}
 	{/each}
