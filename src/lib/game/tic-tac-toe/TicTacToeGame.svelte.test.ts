@@ -94,3 +94,34 @@ describe('tic_tac_toe_game play modes', () => {
 		expect(tic_tac_toe_game.status).toBe('draw')
 	})
 })
+
+describe('tic_tac_toe_game infinite variant', () => {
+	beforeEach(() => {
+		tic_tac_toe_game.set_variant('infinite')
+		tic_tac_toe_game.to_game_list()
+	})
+	afterEach(() => {
+		tic_tac_toe_game.set_variant('classic')
+		tic_tac_toe_game.to_game_list()
+	})
+
+	it('reports the active variant', () => {
+		expect(tic_tac_toe_game.variant).toBe('infinite')
+	})
+
+	it('caps a side at three marks, evicting the oldest on the fourth move', () => {
+		tic_tac_toe_game.start(2)
+		// x:0 o:3 x:1 o:4 x:6 o:7 — x now holds 0,1,6 (no line) and it is x's turn.
+		for (const move of [0, 3, 1, 4, 6, 7]) tic_tac_toe_game.play(move)
+
+		expect(tic_tac_toe_game.pending_removal).toBe(0)
+		expect(count_of(tic_tac_toe_game.serialized, 'x')).toBe(3)
+
+		tic_tac_toe_game.play(8)
+		const { serialized } = tic_tac_toe_game
+
+		expect(serialized.charAt(0)).toBe('.')
+		expect(serialized.charAt(8)).toBe('x')
+		expect(count_of(serialized, 'x')).toBe(3)
+	})
+})

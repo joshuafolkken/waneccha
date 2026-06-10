@@ -1,5 +1,7 @@
 import { game_flow, type GameSnapshot, type GameStatus } from './game-flow'
 import { game_mode, type PlayerCount } from './game-mode'
+import { infinite_flow, type InfiniteState, type Placement } from './infinite-flow'
+import { infinite_minimax } from './infinite-minimax'
 import { minimax } from './minimax'
 import type { Board, Mark } from './tic-tac-toe'
 
@@ -10,17 +12,41 @@ const NO_MOVE = -1
 const SELF_PLAY_DELAY_MS = 350
 
 export type GamePhase = 'game_list' | 'select' | 'playing'
+export type Variant = 'classic' | 'infinite'
 
 // Reactive match controller. Screens: 'game_list' (the WOPR roster) → 'select' (HOW MANY
-// PLAYERS) → 'playing'. 1 = human (x) vs perfect AI (o), 2 = two humans, 0 = AI self-play (the
-// WOPR auto-match), stepped on a timer so the moves are watchable.
+// PLAYERS) → 'playing'. 1 = human (x) vs perfect AI (o), 2 = two humans, 0 = AI self-play.
+// The 'infinite' variant caps each side at 3 marks (oldest is evicted) and uses a depth-limited AI.
 let snapshot = $state<GameSnapshot>(game_flow.initial_snapshot())
+let order = $state<ReadonlyArray<Placement>>([])
 let player_count = $state<PlayerCount | null>(null)
 let screen = $state<GamePhase>('game_list')
+let variant = $state<Variant>('classic')
 let self_play_timer: ReturnType<typeof setTimeout> | null = null
+
+function infinite_state(): InfiniteState {
+	return { snapshot, order }
+}
 
 function is_ai_turn(): boolean {
 	return player_count !== null && game_mode.is_ai_mark(player_count, snapshot.current)
+}
+
+function apply_move(index: number): void {
+	if (variant === 'infinite') {
+		const next = infinite_flow.place_at(infinite_state(), index)
+
+		snapshot = next.snapshot
+		order = next.order
+	} else {
+		snapshot = game_flow.play_at(snapshot, index)
+	}
+}
+
+function ai_best_move(): number {
+	return variant === 'infinite'
+		? infinite_minimax.best_move(infinite_state())
+		: minimax.best_move(snapshot.board, snapshot.current)
 }
 
 function clear_timer(): void {
@@ -33,9 +59,9 @@ function clear_timer(): void {
 function ai_step(): void {
 	if (snapshot.status !== 'playing' || !is_ai_turn()) return
 
-	const move = minimax.best_move(snapshot.board, snapshot.current)
+	const move = ai_best_move()
 
-	if (move !== NO_MOVE) snapshot = game_flow.play_at(snapshot, move)
+	if (move !== NO_MOVE) apply_move(move)
 }
 
 function schedule_self_play(): void {
@@ -50,12 +76,17 @@ function schedule_self_play(): void {
 	}, SELF_PLAY_DELAY_MS)
 }
 
+function reset_board(): void {
+	snapshot = game_flow.initial_snapshot()
+	order = []
+}
+
 // Reset to a fresh board on the given screen, cancelling any running self-play.
 function go_to(target: GamePhase, count: PlayerCount | null): void {
 	clear_timer()
 	screen = target
 	player_count = count
-	snapshot = game_flow.initial_snapshot()
+	reset_board()
 }
 
 function open_select(): void {
@@ -80,15 +111,20 @@ function play(index: number): void {
 
 	const before = snapshot
 
-	snapshot = game_flow.play_at(snapshot, index)
+	apply_move(index)
 
 	if (snapshot !== before && is_ai_turn()) ai_step()
 }
 
 function reset(): void {
 	clear_timer()
-	snapshot = game_flow.initial_snapshot()
+	reset_board()
 	schedule_self_play()
+}
+
+function set_variant(next: Variant): void {
+	variant = next
+	reset()
 }
 
 // Cancel any pending self-play timer without otherwise changing state — for component teardown.
@@ -118,6 +154,12 @@ export const tic_tac_toe_game = {
 	get player_count(): PlayerCount | null {
 		return player_count
 	},
+	get variant(): Variant {
+		return variant
+	},
+	get pending_removal(): number {
+		return variant === 'infinite' ? infinite_flow.pending_removal(infinite_state()) : NO_MOVE
+	},
 	open_select,
 	to_game_list,
 	to_select,
@@ -125,5 +167,6 @@ export const tic_tac_toe_game = {
 	play,
 	ai_step,
 	reset,
+	set_variant,
 	stop,
 }

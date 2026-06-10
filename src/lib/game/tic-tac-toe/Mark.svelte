@@ -7,9 +7,12 @@
 	interface Props {
 		mark: Mark
 		size: number
+		opacity?: number
 	}
 
-	const { mark, size }: Props = $props()
+	const FULL_OPACITY = 1
+
+	const { mark, size, opacity = FULL_OPACITY }: Props = $props()
 
 	const RING_INNER_SCALE = 0.34
 	const RING_OUTER_SCALE = 0.48
@@ -29,15 +32,15 @@
 {#if mark === 'o'}
 	<T.Mesh>
 		<T.RingGeometry args={[ring_inner, ring_outer, RING_SEGMENTS]} />
-		<T.MeshBasicMaterial color={SCREEN_GLOW_COLOR} side={DoubleSide} />
+		<T.MeshBasicMaterial color={SCREEN_GLOW_COLOR} transparent {opacity} side={DoubleSide} />
 	</T.Mesh>
 {:else}
 	<T.Mesh rotation.z={QUARTER_TURN}>
 		<T.BoxGeometry args={[bar_length, bar_thick, BAR_DEPTH]} />
-		<T.MeshBasicMaterial color={SCREEN_GLOW_COLOR} />
+		<T.MeshBasicMaterial color={SCREEN_GLOW_COLOR} transparent {opacity} />
 	</T.Mesh>
 	<T.Mesh rotation.z={-QUARTER_TURN}>
 		<T.BoxGeometry args={[bar_length, bar_thick, BAR_DEPTH]} />
-		<T.MeshBasicMaterial color={SCREEN_GLOW_COLOR} />
+		<T.MeshBasicMaterial color={SCREEN_GLOW_COLOR} transparent {opacity} />
 	</T.Mesh>
 {/if}
