@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { T } from '@threlte/core'
-	import { DoubleSide } from 'three'
+	import { CLICK_PLANE_MATERIAL } from './click-plane-material'
 
 	// A transparent, double-sided clickable plane — the shared hotspot primitive for 3D screen
 	// controls (board cells, menu options, back button). Place content (mark / label) alongside.
@@ -19,5 +19,5 @@
 	}}
 >
 	<T.PlaneGeometry args={[width, height]} />
-	<T.MeshBasicMaterial transparent opacity={0} side={DoubleSide} />
+	<T.MeshBasicMaterial {...CLICK_PLANE_MATERIAL} />
 </T.Mesh>
