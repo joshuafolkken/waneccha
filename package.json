@@ -1,6 +1,6 @@
 {
 	"name": "waneccha",
-	"version": "0.13.0",
+	"version": "0.14.0",
 	"type": "module",
 	"private": true,
 	"scripts": {
@@ -12,17 +12,17 @@
 		"jgame": "jgame",
 		"josh": "josh",
 		"size-limit": "size-limit",
-		"prepare:gen": "[ -f wrangler.jsonc ] && pnpm gen; true",
+		"prepare:gen": "[ ! -f wrangler.jsonc ] || pnpm gen",
 		"prepare:sync": "svelte-kit sync || echo ''",
-		"prepare:lefthook": "command -v lefthook >/dev/null 2>&1 && lefthook install; true",
-		"prepare:gh-packages": "command -v tsx >/dev/null 2>&1 && tsx node_modules/@joshuafolkken/kit/scripts/fix-gh-packages.ts; true",
+		"prepare:lefthook": "[ -n \"$CI\" ] || ! command -v lefthook >/dev/null 2>&1 || lefthook install",
+		"prepare:gh-packages": "[ -n \"$CI\" ] || ! command -v tsx >/dev/null 2>&1 || tsx node_modules/@joshuafolkken/kit/scripts/fix-gh-packages.ts",
 		"gen": "pnpm gen:pre && wrangler types",
 		"gen:pre": "node -e \"const fs=require('node:fs');const d='.svelte-kit/cloudflare';if(fs.existsSync(d))fs.readdirSync(d).forEach(f=>f.startsWith('_worker.')&&fs.rmSync(d+'/'+f,{force:true}))\""
 	},
 	"devDependencies": {
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.1",
-		"@joshuafolkken/game-kit": "^0.154.0",
-		"@joshuafolkken/kit": "0.249.0",
+		"@joshuafolkken/game-kit": "^0.155.0",
+		"@joshuafolkken/kit": "0.252.0",
 		"@playwright/test": "1.60.0",
 		"@size-limit/file": "^12.1.0",
 		"@sveltejs/adapter-cloudflare": "^7.2.8",
