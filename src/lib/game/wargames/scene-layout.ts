@@ -18,9 +18,10 @@ export const SIDE_ROT = 0.5
 export const LEFT_POS: [number, number, number] = [-SIDE_X, SCREEN_Y, SIDE_Z]
 export const RIGHT_POS: [number, number, number] = [SIDE_X, SCREEN_Y, SIDE_Z]
 
-// Lighting.
-export const AMBIENT_INTENSITY = 0.35
-export const POINT_INTENSITY = 1.2
+// Lighting. Bright enough that the room reads as a faintly-lit interior rather than a
+// black void (see issue #27), while staying dim enough to keep the WOPR night mood.
+export const AMBIENT_INTENSITY = 0.6
+export const POINT_INTENSITY = 1.6
 export const POINT_Y = 2.6
 export const POINT_POS: [number, number, number] = [0, POINT_Y, 0]
 
