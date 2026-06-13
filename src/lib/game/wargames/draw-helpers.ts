@@ -1,4 +1,4 @@
-import { SCREEN_GLOW_COLOR, TERMINAL_FONT_FAMILY } from './wargames-config'
+import { SCREEN_CANVAS_BG_COLOR, SCREEN_GLOW_COLOR, TERMINAL_FONT_FAMILY } from './wargames-config'
 
 export interface ScreenSize {
 	w: number
@@ -7,7 +7,6 @@ export interface ScreenSize {
 
 export type DisplayDrawer = (ctx: CanvasRenderingContext2D, size: ScreenSize, t: number) => void
 
-const BG_COLOR = '#02160c'
 const LABEL_FONT_SCALE = 0.07
 const LABEL_PAD_SCALE = 0.5
 const FULL_TURN_HALVES = 2
@@ -17,7 +16,7 @@ export const TWO_PI = Math.PI * FULL_TURN_HALVES
 export const HALF = 0.5
 
 function clear_screen(ctx: CanvasRenderingContext2D, size: ScreenSize): void {
-	ctx.fillStyle = BG_COLOR
+	ctx.fillStyle = SCREEN_CANVAS_BG_COLOR
 	ctx.fillRect(0, 0, size.w, size.h)
 }
 
