@@ -2,17 +2,5 @@
 	"extends": [
 		"./node_modules/@joshuafolkken/kit/tsconfig/sveltekit.jsonc",
 		"./.svelte-kit/tsconfig.json"
-	],
-	"compilerOptions": {
-		"strict": true,
-		"allowJs": true,
-		"checkJs": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"sourceMap": true,
-		"moduleResolution": "bundler",
-		"noEmitOnError": false
-	}
+	]
 }
