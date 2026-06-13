@@ -3,15 +3,20 @@
 export const TERMINAL_FONT_URL = '/fonts/VT323.ttf'
 export const TERMINAL_FONT_FAMILY = 'VT323'
 
-// Phosphor-green WOPR palette.
-export const SCREEN_GLOW_COLOR = '#33ff66'
-export const SCREEN_DIM_COLOR = '#0a3318'
-// Dim-but-visible blue-gray surfaces: the room should read as a faintly-lit interior,
+// Electric-cyan WOPR palette: the light-blue glow of the NORAD big board and the
+// WOPR tic-tac-toe screen in WarGames (1983). Replaces the earlier phosphor green so
+// the room, screens, and operation screens all share one cyan hue family (issue #29).
+export const SCREEN_GLOW_COLOR = '#33ccff'
+export const SCREEN_DIM_COLOR = '#0a2933'
+// Canvas background behind the WOPR operation-screen text/graphics (side & center displays),
+// kept in the same dark-cyan family as the rest of the palette.
+export const SCREEN_CANVAS_BG_COLOR = '#02141a'
+// Dim-but-visible cyan-tinted surfaces: the room should read as a faintly-lit interior,
 // not a pitch-black void (see issue #27). Kept low enough to preserve the WOPR night mood.
-export const ROOM_FLOOR_COLOR = '#2e3744'
-export const ROOM_WALL_COLOR = '#404b5c'
-export const ROOM_CEILING_COLOR = '#2e3744'
-export const SCENE_BG_COLOR = '#01030a'
+export const ROOM_FLOOR_COLOR = '#1e3a44'
+export const ROOM_WALL_COLOR = '#2a505c'
+export const ROOM_CEILING_COLOR = '#1e3a44'
+export const SCENE_BG_COLOR = '#01060a'
 
 // Translucent screen face opacity (half-transparent, per the spec).
 export const SCREEN_OPACITY = 0.5
