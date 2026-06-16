@@ -34,6 +34,13 @@ describe('WarGames floor credits', () => {
 		expect(FLOOR_CREDITS_TEXT).not.toContain('Opus 4.7')
 	})
 
+	it('expands each staff role block as the role followed by its name', () => {
+		expect(FLOOR_CREDITS_TEXT).toContain('CREATIVE DIRECTOR\nJoshua Folkken')
+		expect(FLOOR_CREDITS_TEXT).toContain('EXPERIENCE DESIGNER\nJoshua Folkken')
+		expect(FLOOR_CREDITS_TEXT).toContain('LEAD PROGRAMMER\nClaude Opus 4.8')
+		expect(FLOOR_CREDITS_TEXT).toContain('BUILD ENGINEER\nClaude Opus 4.8')
+	})
+
 	it('scrolls from beyond the far edge of the room to beyond the near edge', () => {
 		expect(FLOOR_CREDITS_START_Z).toBeGreaterThan(0)
 		expect(FLOOR_CREDITS_END_Z).toBe(-FLOOR_CREDITS_START_Z)
