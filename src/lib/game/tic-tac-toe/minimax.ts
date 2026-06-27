@@ -4,7 +4,7 @@ import { tic_tac_toe, type Board, type Mark } from './tic-tac-toe'
 // the fastest win and the slowest loss. Against optimal play it never loses.
 
 const WIN_SCORE = 10
-const INFINITY = Number.POSITIVE_INFINITY
+const INFINITY = Infinity
 const NO_MOVE = -1
 const FIRST_DEPTH = 1
 const NEXT_DEPTH = 1

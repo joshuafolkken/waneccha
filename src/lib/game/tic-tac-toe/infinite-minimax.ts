@@ -9,7 +9,7 @@ import { tic_tac_toe, type Board, type Mark } from './tic-tac-toe'
 const WIN_SCORE = 1000
 const MAX_DEPTH = 6
 const NO_MOVE = -1
-const INFINITY = Number.POSITIVE_INFINITY
+const INFINITY = Infinity
 const THREAT_MARKS = 2
 const THREAT_EMPTIES = 1
 

@@ -18,7 +18,7 @@ export const FLOOR_CREDITS_COLOR = '#ff0000'
 
 // FloorCredits requires is_alt, but FLOOR_CREDITS_COLOR overrides the palette it would
 // otherwise pick, so this value no longer drives the rendered color.
-export const FLOOR_CREDITS_IS_ALT = true
+export const IS_FLOOR_CREDITS_ALT = true
 
 // Scroll the roll from beyond the room's far edge to beyond its near edge so the whole
 // list passes under the player's feet, then loops (matches the pre-WarGames scene).
