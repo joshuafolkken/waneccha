@@ -36,9 +36,14 @@ interface Ambient {
 	chatter: ReturnType<typeof setInterval>
 }
 
-let ambient: Ambient | null = null
-// Rotates the teletype blip pitch deterministically (no PRNG) for a churning-machine feel.
-let chatter_step = 0
+// Mutable ambient-bed state kept in one const object. The no-top-level-assignment-in-function
+// rule forbids reassigning a top-level `let` from inside a function, but mutating a const's
+// properties is allowed. `node` holds the running oscillators; `chatter_step` rotates the
+// teletype blip pitch deterministically (no PRNG) for a churning-machine feel.
+const ambient_state: { node: Ambient | null; chatter_step: number } = {
+	node: null,
+	chatter_step: 0,
+}
 
 // One oscillator with a quick attack and exponential decay — the shared shape of every beep.
 function schedule_voice(context: AudioContext, voice: VoiceSpec): void {
@@ -92,9 +97,9 @@ function play_chatter(): void {
 	if (context === null) return
 
 	const start = context.currentTime
-	const frequency = CHATTER_MIN_HZ + (chatter_step % CHATTER_STEPS) * CHATTER_STEP_HZ
+	const frequency = CHATTER_MIN_HZ + (ambient_state.chatter_step % CHATTER_STEPS) * CHATTER_STEP_HZ
 
-	chatter_step += 1
+	ambient_state.chatter_step += 1
 	schedule_voice(context, {
 		type: 'square',
 		frequency,
@@ -107,7 +112,7 @@ function play_chatter(): void {
 function start_ambient(): void {
 	const context = audio.get_audio_context()
 
-	if (context === null || ambient !== null) return
+	if (context === null || ambient_state.node !== null) return
 
 	const hum = context.createOscillator()
 	const gain = context.createGain()
@@ -118,17 +123,19 @@ function start_ambient(): void {
 	hum.connect(gain).connect(context.destination)
 	hum.start()
 
-	ambient = { hum, gain, chatter: setInterval(play_chatter, CHATTER_INTERVAL_MS) }
+	ambient_state.node = { hum, gain, chatter: setInterval(play_chatter, CHATTER_INTERVAL_MS) }
 }
 
 function stop_ambient(): void {
-	if (ambient === null) return
+	const running = ambient_state.node
 
-	clearInterval(ambient.chatter)
-	ambient.hum.stop()
-	ambient.hum.disconnect()
-	ambient.gain.disconnect()
-	ambient = null
+	if (running === null) return
+
+	clearInterval(running.chatter)
+	running.hum.stop()
+	running.hum.disconnect()
+	running.gain.disconnect()
+	ambient_state.node = null
 }
 
 export const wopr_audio = {
