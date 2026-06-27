@@ -16,11 +16,11 @@ function drawer_for(id: SideDisplayId): DisplayDrawer {
 	return DRAWERS[id]
 }
 
-function has(id: string): id is SideDisplayId {
+function has_display(id: string): id is SideDisplayId {
 	return Object.hasOwn(DRAWERS, id)
 }
 
 export const side_displays = {
 	drawer_for,
-	has,
+	has_display,
 }

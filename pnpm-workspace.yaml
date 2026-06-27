@@ -1,4 +1,5 @@
 allowBuilds:
+  '@joshuafolkken/app-kit': true
   '@joshuafolkken/game-kit': true
   '@joshuafolkken/kit': true
   esbuild: true
