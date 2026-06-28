@@ -25,19 +25,8 @@ const game_overrides = {
 	},
 }
 
-// SvelteKit reserves the page-option export names (ssr/csr/prerender/trailingSlash). They are
-// booleans that cannot take an is_/has_ prefix, and kit exempts them in its naming-convention
-// rule but not in unicorn/consistent-boolean-name. Scope that one rule off for route files until
-// kit closes the gap upstream. (Issue #53 full-chain smoke test surfaced this under kit 0.280.)
-const route_overrides = {
-	files: ['src/routes/**/+*.ts', 'src/routes/**/+*.js'],
-	rules: {
-		'unicorn/consistent-boolean-name': 'off',
-	},
-}
-
 export default create_sveltekit_config({
 	gitignore_path: new URL('./.gitignore', import.meta.url),
 	tsconfig_root_dir: import.meta.dirname,
 	svelte_config: svelteConfig,
-}).concat(game_overrides, route_overrides)
+}).concat(game_overrides)
