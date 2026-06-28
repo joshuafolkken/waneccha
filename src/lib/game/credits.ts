@@ -3,6 +3,8 @@ import { game_config } from '$lib/game-config'
 const SIL_LICENSE = 'SIL Open Font License'
 const VIA_GOOGLE_FONTS = 'via Google Fonts'
 const CC_BY_NC_SA_LICENSE = 'CC BY-NC-SA 4.0'
+// Author of both WarGames recreation fonts (Title for credits, Terminal for the controls hint).
+const MICHAEL_WALDEN = 'Michael Walden'
 const CREATOR = 'Joshua Folkken'
 const AI_ENGINEER = 'Claude Opus 4.8'
 
@@ -140,7 +142,11 @@ export const CREDITS_LINES = [
 	'',
 	'',
 	'WarGames Title',
-	'Michael Walden',
+	MICHAEL_WALDEN,
+	CC_BY_NC_SA_LICENSE,
+	'',
+	'WarGames Terminal',
+	MICHAEL_WALDEN,
 	CC_BY_NC_SA_LICENSE,
 	'',
 	'Press Start 2P',

@@ -3,6 +3,7 @@
 	import { ALL_PLAYER_COUNTS } from '$lib/game/tic-tac-toe/game-mode'
 	import { CELL_INDICES } from '$lib/game/tic-tac-toe/tic-tac-toe'
 	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
+	import { HINT_FONT_URL } from '$lib/game/wargames/hint-font'
 	import { side_display_state } from '$lib/game/wargames/SideDisplayState.svelte'
 	import WarRoom from '$lib/game/wargames/WarRoom.svelte'
 	import WoprAudio from '$lib/game/wargames/WoprAudio.svelte'
@@ -15,6 +16,7 @@
 
 <GameScene
 	{hint_text}
+	hint_font={HINT_FONT_URL}
 	label_jump={messages.jump_button}
 	label_game={messages.game_application_label}
 	label_game_started={messages.game_started_announcement}
