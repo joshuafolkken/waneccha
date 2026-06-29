@@ -12,5 +12,19 @@ const STROKE_ROM_BASE64 =
 const INDEX_ROM_BASE64 =
 	'3sXo3qChoqN63Xt83H1+gIKHjI+SlZibt7mppK6zvuXe3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3gABBAcMFBogIiUoLC8xMzU3PUBFTE9VXF9ob3J1d3p83t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t6Hj5KYnaGlqK6xtbm8vsHDyMzS197h5efq7O/y9ff6/N7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3wEHCxAVGh4kJyouMTQ5PEVKT1JXW19hZGZpbHBzd9Pe3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7F6N6goaKjet17fNx9foCCh4yPkpWYm7e5qaSus77l3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t4AAQQHDBQaICIlKCwvMTM1Nz1ARUxPVVxfaG9ydXd6fN7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7eh4+SmJ2hpaiusbW5vL7Bw8jM0tfe4eXn6uzv8vX3+vze3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t8BBwsQFRoeJCcqLjE0OTxFSk9SV1tfYWRmaWxwc3fT3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t4='
 
-export const STROKE_BYTES = Uint8Array.fromBase64(STROKE_ROM_BASE64)
-export const INDEX_BYTES = Uint8Array.fromBase64(INDEX_ROM_BASE64)
+// `Uint8Array.fromBase64` is too new for the Cloudflare Workers runtime and CI Node, so decode with
+// the portable `atob` (available in browsers, Workers, and Node alike).
+function bytes_from_base64(encoded: string): Uint8Array {
+	// eslint-disable-next-line unicorn/prefer-uint8array-base64 -- fromBase64 unavailable at runtime
+	const binary = atob(encoded)
+	const bytes = new Uint8Array(binary.length)
+
+	for (let index = 0; index < binary.length; index += 1) {
+		bytes[index] = binary.codePointAt(index) ?? 0
+	}
+
+	return bytes
+}
+
+export const STROKE_BYTES = bytes_from_base64(STROKE_ROM_BASE64)
+export const INDEX_BYTES = bytes_from_base64(INDEX_ROM_BASE64)
