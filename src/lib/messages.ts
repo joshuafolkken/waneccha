@@ -6,6 +6,7 @@ const game_messages = {
 	game_application_label: game_config.GAME_APP_LABEL,
 	wopr_board_title: 'TIC-TAC-TOE',
 	wopr_board_standby: 'STANDBY',
+	norad_banner: 'NORAD',
 	ttt_your_move: 'YOUR MOVE',
 	ttt_wopr_wins: 'WOPR WINS',
 	ttt_you_win: 'YOU WIN',

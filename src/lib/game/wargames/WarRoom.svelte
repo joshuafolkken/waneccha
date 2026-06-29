@@ -14,8 +14,11 @@
 		FLOOR_CREDITS_TEXT,
 		IS_FLOOR_CREDITS_ALT,
 	} from './floor-credits'
+	import Hp1345aText from './Hp1345aText.svelte'
 	import {
 		AMBIENT_INTENSITY,
+		BANNER_POS,
+		BANNER_SIZE,
 		CENTER_H,
 		CENTER_POS,
 		CENTER_W,
@@ -77,6 +80,8 @@
 	font={FLOOR_CREDITS_FONT_URL}
 	color={FLOOR_CREDITS_COLOR}
 />
+
+<Hp1345aText text={messages.norad_banner} position={BANNER_POS} size={BANNER_SIZE} />
 
 <Screen position={CENTER_POS} width={CENTER_W} height={CENTER_H}>
 	<CenterScreen title={messages.wopr_board_title} />

@@ -21,4 +21,7 @@ words:
   - Badham
   - Lasker
   - Parkes
-ignorePaths: []
+  - lerp
+ignorePaths:
+  # Generated base64 HP1345A font ROM tables — binary data, not natural-language text.
+  - src/lib/game/wargames/hp1345a-rom.ts
