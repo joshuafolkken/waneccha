@@ -8,6 +8,17 @@ test('WarGames foundation renders the 3D scene with a canvas', async ({ page }) 
 	await expect(page.locator('canvas')).toBeVisible()
 })
 
+test('NORAD banner renders in the HP1345A vector font', async ({ page }) => {
+	await page.goto('/')
+
+	// The 3D banner is drawn in WebGL; its visually-hidden mirror proves it is mounted.
+	const banner = page.getByTestId('norad-banner')
+
+	await expect(banner).toBeAttached()
+	await expect(banner).toHaveText('NORAD')
+	await expect(page.locator('canvas')).toBeVisible()
+})
+
 test('side displays expose valid cycling display ids', async ({ page }) => {
 	await page.goto('/')
 	const marker = page.getByTestId('side-display')

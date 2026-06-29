@@ -27,3 +27,10 @@ export const POINT_POS: [number, number, number] = [0, POINT_Y, 0]
 
 // Content sits a hair in front of the translucent glass plane to avoid z-fighting.
 export const CONTENT_Z_OFFSET = 0.02
+
+// NORAD banner — HP1345A vector-font header floating above the center screen. The center screen top
+// is at SCREEN_Y + CENTER_H / 2 = 2.5; the banner sits clear of it with a gap (and below the 3-high
+// ceiling). See scene-layout.test.ts for the no-overlap guard.
+const BANNER_Y = 2.75
+export const BANNER_SIZE = 0.22
+export const BANNER_POS: [number, number, number] = [0, BANNER_Y, CENTER_Z]
