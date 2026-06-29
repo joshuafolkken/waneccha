@@ -37,6 +37,10 @@
 	aria-hidden="true"
 ></div>
 
+<!-- Visually-hidden mirror of the HP1345A vector-font NORAD banner rendered in WebGL, so E2E can
+     assert it is present without inspecting GL pixels. -->
+<div class="sr-only" data-testid="norad-banner" aria-hidden="true">{messages.norad_banner}</div>
+
 <!-- Accessible fallback controls for the 3D tic-tac-toe board: keyboard/screen-reader play
      plus stable selectors for E2E (the WebGL cells handle pointer input). -->
 <section class="sr-only" aria-label={messages.ttt_controls_label}>
