@@ -15,6 +15,7 @@
 </script>
 
 <GameScene
+	crt_initial="off"
 	{hint_text}
 	hint_font={HINT_FONT_URL}
 	label_jump={messages.jump_button}

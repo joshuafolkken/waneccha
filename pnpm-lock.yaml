@@ -219,8 +219,8 @@ importers:
         specifier: 0.22.0
         version: 0.22.0(@joshuafolkken/kit@0.281.0(@playwright/test@1.61.1)(@typescript-eslint/utils@8.62.0(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.6.0(jiti@2.7.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3))(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       '@joshuafolkken/game-kit':
-        specifier: ^0.168.0
-        version: 0.168.0(@joshuafolkken/app-kit@0.22.0(@joshuafolkken/kit@0.281.0(@playwright/test@1.61.1)(@typescript-eslint/utils@8.62.0(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.6.0(jiti@2.7.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3))(svelte@5.56.4(@typescript-eslint/types@8.62.0)))(@threlte/core@8.5.16(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0))(@threlte/extras@9.21.0(@types/three@0.185.0)(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0)
+        specifier: ^0.171.0
+        version: 0.171.0(@joshuafolkken/app-kit@0.22.0(@joshuafolkken/kit@0.281.0(@playwright/test@1.61.1)(@typescript-eslint/utils@8.62.0(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.6.0(jiti@2.7.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3))(svelte@5.56.4(@typescript-eslint/types@8.62.0)))(@threlte/core@8.5.16(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0))(@threlte/extras@9.21.0(@types/three@0.185.0)(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0)
       '@joshuafolkken/kit':
         specifier: 0.281.0
         version: 0.281.0(@playwright/test@1.61.1)(@typescript-eslint/utils@8.62.0(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.6.0(jiti@2.7.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)
@@ -1556,8 +1556,8 @@ packages:
       '@joshuafolkken/kit': '>=0.279.0'
       svelte: ^5.0.0
 
-  '@joshuafolkken/game-kit@0.168.0':
-    resolution: {integrity: sha512-i4dCijry/TfS/hySaFIRPXYCUy5xRrkm4HYyh/d7ZUNZm6ipS+k2vVG77FxciqkzgHwNi1OgkUHI/Ha286XNoA==, tarball: https://npm.pkg.github.com/download/@joshuafolkken/game-kit/0.168.0/145b5cc9934840b7a71550fa1d61fa96c4eb1340}
+  '@joshuafolkken/game-kit@0.171.0':
+    resolution: {integrity: sha512-0sJbyEROg26ziWNzj9rlIehQZmHGtubYNWwtQBmXgpUhq/JanWCcRZJtSc7Xe0/m+rkcaxu49OvhMXY375AVew==, tarball: https://npm.pkg.github.com/download/@joshuafolkken/game-kit/0.171.0/58ef62176377df98a4550a8c1ef23ee2f00598dd}
     hasBin: true
     peerDependencies:
       '@joshuafolkken/app-kit': '>=0.20.0'
@@ -5880,7 +5880,7 @@ snapshots:
       '@joshuafolkken/kit': 0.281.0(@playwright/test@1.61.1)(@typescript-eslint/utils@8.62.0(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.6.0(jiti@2.7.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)
       svelte: 5.56.4(@typescript-eslint/types@8.62.0)
 
-  '@joshuafolkken/game-kit@0.168.0(@joshuafolkken/app-kit@0.22.0(@joshuafolkken/kit@0.281.0(@playwright/test@1.61.1)(@typescript-eslint/utils@8.62.0(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.6.0(jiti@2.7.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3))(svelte@5.56.4(@typescript-eslint/types@8.62.0)))(@threlte/core@8.5.16(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0))(@threlte/extras@9.21.0(@types/three@0.185.0)(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0)':
+  '@joshuafolkken/game-kit@0.171.0(@joshuafolkken/app-kit@0.22.0(@joshuafolkken/kit@0.281.0(@playwright/test@1.61.1)(@typescript-eslint/utils@8.62.0(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.6.0(jiti@2.7.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3))(svelte@5.56.4(@typescript-eslint/types@8.62.0)))(@threlte/core@8.5.16(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0))(@threlte/extras@9.21.0(@types/three@0.185.0)(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0)':
     dependencies:
       '@joshuafolkken/app-kit': 0.22.0(@joshuafolkken/kit@0.281.0(@playwright/test@1.61.1)(@typescript-eslint/utils@8.62.0(eslint@10.6.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.6.0(jiti@2.7.0))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3))(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       '@threlte/core': 8.5.16(svelte@5.56.4(@typescript-eslint/types@8.62.0))(three@0.185.0)
