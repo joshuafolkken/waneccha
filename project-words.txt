@@ -1,0 +1,23 @@
+# Project-specific cspell words — owned by this project.
+# jgame sync never overwrites this file, so game nouns, character names, and other project
+# terms added here survive every dependency bump (game-kit#375).
+waneccha
+multicriteria
+wargames
+wopr
+defcon
+onpress
+WASD
+falken
+theaterwide
+biotoxic
+negamax
+luma
+lerp
+sfnt
+scanlines
+armeria
+mnemecha
+Badham
+Lasker
+Parkes
