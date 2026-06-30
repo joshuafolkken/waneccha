@@ -1,6 +1,6 @@
 {
 	"name": "waneccha",
-	"version": "0.27.0",
+	"version": "0.28.0",
 	"type": "module",
 	"private": true,
 	"scripts": {
@@ -22,7 +22,7 @@
 	"devDependencies": {
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.1",
 		"@joshuafolkken/app-kit": "0.25.0",
-		"@joshuafolkken/game-kit": "^0.171.0",
+		"@joshuafolkken/game-kit": "^0.172.0",
 		"@joshuafolkken/kit": "0.282.0",
 		"@playwright/test": "1.61.1",
 		"@size-limit/file": "^12.1.0",
