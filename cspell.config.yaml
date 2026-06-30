@@ -1,13 +1,11 @@
 version: '0.2'
 import:
   - '@joshuafolkken/game-kit/cspell/game'
+  - ./cspell.project.yaml
 dictionaryDefinitions:
   - name: project-words
     path: ./project-words.txt
     addWords: true
 dictionaries:
   - project-words
-ignorePaths:
-  # Generated base64 HP1345A font ROM tables — binary data, not natural-language text.
-  # NOTE: jgame sync resets this to [] every run until game-kit#385 lands; restore if it disappears.
-  - src/lib/game/wargames/hp1345a-rom.ts
+ignorePaths: []
