@@ -183,14 +183,33 @@ describe('hp1345a_font.fit_size', () => {
 	const EPSILON = 1e-9
 	const LONGEST_CHARS = 10
 	const LINE_COUNT = 3
+	// 10-char longest line, 3 lines (including the blank middle line).
+	const SAMPLE = 'AAAAAAAAAA\n\nB'
 
 	it('shrinks text so its longest line and line count both fit the content box', () => {
 		const content_width = 5
 		const content_height = 3
-		// 10-char longest line, 3 lines (including the blank middle line).
-		const size = hp1345a_font.fit_size('AAAAAAAAAA\n\nB', content_width, content_height)
+		const size = hp1345a_font.fit_size(SAMPLE, content_width, content_height)
 		const longest_line = LONGEST_CHARS * GLYPH_ADVANCE * (size / GLYPH_CAP_HEIGHT)
 		const block_height = ((LINE_COUNT - 1) * LINE_SPACING_FACTOR + 1) * size
+
+		expect(size).toBeGreaterThan(0)
+		expect(longest_line).toBeLessThanOrEqual(content_width + EPSILON)
+		expect(block_height).toBeLessThanOrEqual(content_height + EPSILON)
+	})
+
+	it('accounts for letter_spacing and line_spacing so the block still fits the content box', () => {
+		const content_width = 5
+		const content_height = 3
+		const letter_spacing = 1.5
+		const line_spacing = 1.5
+		const size = hp1345a_font.fit_size(SAMPLE, content_width, content_height, {
+			letter_spacing,
+			line_spacing,
+		})
+		// Widened advance pitch and inter-line gaps must be baked into the fit, or the block overflows.
+		const longest_line = LONGEST_CHARS * GLYPH_ADVANCE * letter_spacing * (size / GLYPH_CAP_HEIGHT)
+		const block_height = ((LINE_COUNT - 1) * LINE_SPACING_FACTOR * line_spacing + 1) * size
 
 		expect(size).toBeGreaterThan(0)
 		expect(longest_line).toBeLessThanOrEqual(content_width + EPSILON)

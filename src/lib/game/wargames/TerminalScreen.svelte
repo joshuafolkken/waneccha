@@ -35,7 +35,12 @@
 	const inner_h = $derived(height - BORDER * TWO)
 	const content_w = $derived(width - PADDING * TWO)
 	const content_h = $derived(height - PADDING * TWO)
-	const text_size = $derived(hp1345a_font.fit_size(text, content_w, content_h))
+	const text_size = $derived(
+		hp1345a_font.fit_size(text, content_w, content_h, {
+			letter_spacing: LETTER_SPACING,
+			line_spacing: LINE_SPACING,
+		}),
+	)
 	const text_position = $derived<[number, number, number]>([
 		-width / TWO + PADDING,
 		height / TWO - PADDING,

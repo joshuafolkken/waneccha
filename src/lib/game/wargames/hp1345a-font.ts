@@ -249,15 +249,23 @@ function to_block_positions(text: string, size: number, layout: TextLayout = {})
 }
 
 // Largest cap size at which `text` fits inside a content box: bounded by its longest line (width) and
-// its line count incl. blank lines (height). Lets a screen auto-shrink text to always fit.
-function fit_size(text: string, content_width: number, content_height: number): number {
+// its line count incl. blank lines (height). `layout` MUST match the render-time layout — letter_spacing
+// widens the advance pitch and line_spacing widens the inter-line gaps, so ignoring them would
+// over-estimate the fit and overflow the box. condense (<=1) only shrinks each glyph within its advance
+// pitch, so the advance-based width estimate stays conservative. Lets a screen auto-shrink text to fit.
+function fit_size(
+	text: string,
+	content_width: number,
+	content_height: number,
+	layout: TextLayout = {},
+): number {
+	const { letter_spacing, line_spacing } = resolve_layout(layout)
+	const advance = GLYPH_ADVANCE * letter_spacing
 	const lines = text.split('\n')
 	const max_chars = Math.max(...lines.map((line) => line.length))
 	const width_size =
-		max_chars > 0
-			? (content_width * GLYPH_CAP_HEIGHT) / (max_chars * GLYPH_ADVANCE)
-			: content_height
-	const height_factor = (lines.length - 1) * LINE_SPACING_FACTOR + 1
+		max_chars > 0 ? (content_width * GLYPH_CAP_HEIGHT) / (max_chars * advance) : content_height
+	const height_factor = (lines.length - 1) * LINE_SPACING_FACTOR * line_spacing + 1
 
 	return Math.min(width_size, content_height / height_factor)
 }
