@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { GLYPH_ADVANCE, GLYPH_CAP_HEIGHT, hp1345a_font } from './hp1345a-font'
+import { GLYPH_ADVANCE, GLYPH_CAP_HEIGHT, hp1345a_font, LINE_SPACING_FACTOR } from './hp1345a-font'
+import { WOPR_CONSOLE_GLYPHS } from './wopr-console-glyphs'
 
 const SEGMENT_STRIDE = 4
 
 function code(character: string): number {
 	return character.codePointAt(0) ?? 0
+}
+
+function span(values: Array<number>): number {
+	return Math.max(...values) - Math.min(...values)
 }
 
 describe('hp1345a_font.decode_glyph', () => {
@@ -36,6 +41,41 @@ describe('hp1345a_font.decode_glyph', () => {
 
 	it('draws nothing for an unmapped control character', () => {
 		expect(hp1345a_font.to_segment_points(hp1345a_font.decode_glyph(0))).toEqual([])
+	})
+})
+
+describe('hp1345a_font.decode_glyph WOPR console overrides', () => {
+	it('returns the override geometry for a restyled banner character (G)', () => {
+		const expected = WOPR_CONSOLE_GLYPHS.get(code('G'))
+
+		expect(hp1345a_font.decode_glyph(code('G'))).toEqual(expected?.map((line) => [...line]))
+	})
+
+	it('still decodes a non-overridden character (H) straight from the ROM', () => {
+		// H is intentionally left on the ROM, so its decoded shape keeps the trailing advance point.
+		expect(hp1345a_font.decode_glyph(code('H'))).toEqual([
+			[
+				[0, 0],
+				[0, 18],
+			],
+			[
+				[12, 0],
+				[12, 18],
+			],
+			[
+				[0, 9],
+				[12, 9],
+			],
+			[[18, 0]],
+		])
+	})
+
+	it('returns a fresh copy so mutating the result cannot corrupt the override table', () => {
+		const first = hp1345a_font.decode_glyph(code('G'))
+
+		first[0] = []
+
+		expect(hp1345a_font.decode_glyph(code('G'))[0]?.length).toBeGreaterThan(0)
 	})
 })
 
@@ -95,6 +135,88 @@ describe('hp1345a_font.to_line_positions', () => {
 	})
 })
 
+describe('hp1345a_font.to_block_positions', () => {
+	const VERTEX_COORDS = 3
+	const Y_INDEX = 1
+
+	function ys(positions: Array<number>): Array<number> {
+		return positions.filter((_, index) => index % VERTEX_COORDS === Y_INDEX)
+	}
+
+	it('returns the single-line layout unchanged when there is no newline', () => {
+		expect(hp1345a_font.to_block_positions('WOPR', 1)).toEqual(
+			hp1345a_font.to_line_positions('WOPR', 1),
+		)
+	})
+
+	it('stacks lines vertically: the block is taller than one line and the first line sits highest', () => {
+		const size = 4
+		const single = ys(hp1345a_font.to_line_positions('H', size))
+		const block = ys(hp1345a_font.to_block_positions('H\nH', size))
+
+		expect(span(block)).toBeGreaterThan(span(single))
+		expect(Math.max(...block)).toBeGreaterThan(Math.max(...single))
+		expect(Math.min(...block)).toBeLessThan(Math.min(...single))
+	})
+
+	it('left/top anchors the block at the origin (no vertices left of or above it)', () => {
+		const positions = hp1345a_font.to_block_positions('AB\nCDE', 4, {
+			align: 'left',
+			valign: 'top',
+		})
+		const xs = positions.filter((_, index) => index % VERTEX_COORDS === 0)
+
+		expect(Math.min(...xs)).toBeGreaterThanOrEqual(0)
+		expect(Math.max(...ys(positions))).toBeLessThanOrEqual(0)
+	})
+
+	it('line_spacing widens the gap between stacked lines (y span grows)', () => {
+		const size = 4
+		const normal = ys(hp1345a_font.to_block_positions('H\nH', size))
+		const wide = ys(hp1345a_font.to_block_positions('H\nH', size, { line_spacing: 2 }))
+
+		expect(span(wide)).toBeGreaterThan(span(normal))
+	})
+})
+
+describe('hp1345a_font.fit_size', () => {
+	const EPSILON = 1e-9
+	const LONGEST_CHARS = 10
+	const LINE_COUNT = 3
+	// 10-char longest line, 3 lines (including the blank middle line).
+	const SAMPLE = 'AAAAAAAAAA\n\nB'
+
+	it('shrinks text so its longest line and line count both fit the content box', () => {
+		const content_width = 5
+		const content_height = 3
+		const size = hp1345a_font.fit_size(SAMPLE, content_width, content_height)
+		const longest_line = LONGEST_CHARS * GLYPH_ADVANCE * (size / GLYPH_CAP_HEIGHT)
+		const block_height = ((LINE_COUNT - 1) * LINE_SPACING_FACTOR + 1) * size
+
+		expect(size).toBeGreaterThan(0)
+		expect(longest_line).toBeLessThanOrEqual(content_width + EPSILON)
+		expect(block_height).toBeLessThanOrEqual(content_height + EPSILON)
+	})
+
+	it('accounts for letter_spacing and line_spacing so the block still fits the content box', () => {
+		const content_width = 5
+		const content_height = 3
+		const letter_spacing = 1.5
+		const line_spacing = 1.5
+		const size = hp1345a_font.fit_size(SAMPLE, content_width, content_height, {
+			letter_spacing,
+			line_spacing,
+		})
+		// Widened advance pitch and inter-line gaps must be baked into the fit, or the block overflows.
+		const longest_line = LONGEST_CHARS * GLYPH_ADVANCE * letter_spacing * (size / GLYPH_CAP_HEIGHT)
+		const block_height = ((LINE_COUNT - 1) * LINE_SPACING_FACTOR * line_spacing + 1) * size
+
+		expect(size).toBeGreaterThan(0)
+		expect(longest_line).toBeLessThanOrEqual(content_width + EPSILON)
+		expect(block_height).toBeLessThanOrEqual(content_height + EPSILON)
+	})
+})
+
 describe('hp1345a_font.layout_text', () => {
 	it('advances each glyph by GLYPH_ADVANCE along x', () => {
 		const second_min_x = Math.min(
@@ -114,5 +236,34 @@ describe('hp1345a_font.layout_text', () => {
 
 		// Same two H glyphs are drawn either way; the space only shifts the third column.
 		expect(spaced).toHaveLength(solid.length)
+	})
+
+	it('condense narrows each glyph width but keeps the GLYPH_ADVANCE pitch and y', () => {
+		const condense = 0.5
+		const full = hp1345a_font.layout_text('HH').flat()
+		const slim = hp1345a_font.layout_text('HH', condense).flat()
+
+		// The second glyph still starts a full advance to the right (letter spacing unchanged).
+		const second_min_x = Math.min(...slim.map(([x]) => x).filter((x) => x >= GLYPH_ADVANCE))
+
+		expect(second_min_x).toBe(GLYPH_ADVANCE)
+
+		// Within the first glyph, x is scaled by condense while y is untouched.
+		for (const [index, [x, y]] of full.entries()) {
+			if (x >= GLYPH_ADVANCE) continue
+
+			expect(slim[index]?.[0]).toBeCloseTo(x * condense)
+			expect(slim[index]?.[1]).toBe(y)
+		}
+	})
+
+	it('letter_spacing scales the GLYPH_ADVANCE pitch between glyphs', () => {
+		const letter_spacing = 2
+		const wide = hp1345a_font.layout_text('HH', 1, letter_spacing).flat()
+		const widened_pitch = GLYPH_ADVANCE * letter_spacing
+		const second_min_x = Math.min(...wide.map(([x]) => x).filter((x) => x >= widened_pitch))
+
+		// The second glyph now starts a doubled advance to the right.
+		expect(second_min_x).toBe(widened_pitch)
 	})
 })

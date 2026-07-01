@@ -15,7 +15,8 @@ test('NORAD banner renders in the HP1345A vector font', async ({ page }) => {
 	const banner = page.getByTestId('norad-banner')
 
 	await expect(banner).toBeAttached()
-	await expect(banner).toHaveText('NORAD')
+	// The banner shows the WOPR message; assert an iconic, stable line of it.
+	await expect(banner).toContainText('A STRANGE GAME.')
 	await expect(page.locator('canvas')).toBeVisible()
 })
 
