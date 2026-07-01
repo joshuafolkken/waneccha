@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { FloorCredits, Player, Room, ROOM_D, ROOM_H, ROOM_W } from '@joshuafolkken/game-kit'
-	import { T } from '@threlte/core'
+	import { T, useThrelte } from '@threlte/core'
 	import { interactivity } from '@threlte/extras'
 	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
 	import { messages } from '$lib/messages'
 	import { onDestroy, onMount } from 'svelte'
+	import { NoToneMapping } from 'three'
 	import CenterScreen from './CenterScreen.svelte'
 	import {
 		FLOOR_CREDITS_COLOR,
@@ -14,11 +15,8 @@
 		FLOOR_CREDITS_TEXT,
 		IS_FLOOR_CREDITS_ALT,
 	} from './floor-credits'
-	import Hp1345aText from './Hp1345aText.svelte'
 	import {
 		AMBIENT_INTENSITY,
-		BANNER_POS,
-		BANNER_SIZE,
 		CENTER_H,
 		CENTER_POS,
 		CENTER_W,
@@ -29,16 +27,21 @@
 		SIDE_H,
 		SIDE_ROT,
 		SIDE_W,
+		TERMINAL_H,
+		TERMINAL_POS,
+		TERMINAL_ROT,
+		TERMINAL_W,
 	} from './scene-layout'
 	import Screen from './Screen.svelte'
 	import { side_display_state } from './SideDisplayState.svelte'
 	import SideScreen from './SideScreen.svelte'
+	import TerminalScreen from './TerminalScreen.svelte'
 	import {
+		LIGHT_COLOR,
 		ROOM_CEILING_COLOR,
 		ROOM_FLOOR_COLOR,
 		ROOM_WALL_COLOR,
 		SCENE_BG_COLOR,
-		SCREEN_GLOW_COLOR,
 	} from './wargames-config'
 
 	// Shake the camera when a game finishes (WarGames drama).
@@ -48,6 +51,11 @@
 
 	// Enable pointer raycasting so the tic-tac-toe cells on the center screen are clickable.
 	interactivity()
+
+	// Threlte defaults the renderer to AgX tone mapping, which compresses white to ~0.8 and washes the
+	// color out of the bright screen text/borders (they read as grey-blue instead of the crisp white +
+	// vivid blue of the WarGames console). Disable it so the WOPR palette renders at its true values.
+	useThrelte().toneMapping.set(NoToneMapping)
 
 	onMount(() => {
 		side_display_state.start()
@@ -60,8 +68,8 @@
 
 <T.Color attach="background" args={[SCENE_BG_COLOR]} />
 <Player is_gameover={is_over} />
-<T.AmbientLight intensity={AMBIENT_INTENSITY} color={SCREEN_GLOW_COLOR} />
-<T.PointLight position={POINT_POS} intensity={POINT_INTENSITY} color={SCREEN_GLOW_COLOR} />
+<T.AmbientLight intensity={AMBIENT_INTENSITY} color={LIGHT_COLOR} />
+<T.PointLight position={POINT_POS} intensity={POINT_INTENSITY} color={LIGHT_COLOR} />
 
 <Room
 	width={ROOM_W}
@@ -81,8 +89,6 @@
 	color={FLOOR_CREDITS_COLOR}
 />
 
-<Hp1345aText text={messages.norad_banner} position={BANNER_POS} size={BANNER_SIZE} />
-
 <Screen position={CENTER_POS} width={CENTER_W} height={CENTER_H}>
 	<CenterScreen title={messages.wopr_board_title} />
 </Screen>
@@ -94,3 +100,11 @@
 <Screen position={RIGHT_POS} rotation_y={-SIDE_ROT} width={SIDE_W} height={SIDE_H}>
 	<SideScreen id={side_display_state.right_id} width={SIDE_W} height={SIDE_H} />
 </Screen>
+
+<TerminalScreen
+	position={TERMINAL_POS}
+	rotation_y={TERMINAL_ROT}
+	width={TERMINAL_W}
+	height={TERMINAL_H}
+	text={messages.norad_banner}
+/>
