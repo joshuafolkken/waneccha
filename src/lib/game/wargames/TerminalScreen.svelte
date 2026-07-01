@@ -3,6 +3,7 @@
 	import { DoubleSide } from 'three'
 	import { hp1345a_font } from './hp1345a-font'
 	import Hp1345aText from './Hp1345aText.svelte'
+	import { TERMINAL_TEXT_COLOR } from './wargames-config'
 
 	// A WarGames CRT terminal panel: an opaque dark screen framed by a thick solid white border (the
 	// border is a larger white plane showing around the smaller dark face), with the message rendered
@@ -19,7 +20,7 @@
 	const { position, rotation_y = 0, width, height, text }: Props = $props()
 
 	const TWO = 2
-	const BORDER = 0.03
+	const BORDER = 0.023
 	const PADDING = 0.22
 	const FRAME_Z = 0.01
 	const TEXT_Z = 0.02
@@ -27,7 +28,7 @@
 	const CONDENSE = 0.8
 	const LETTER_SPACING = 0.85
 	const LINE_SPACING = 1.45
-	const TEXT_COLOR = '#8fb2ff'
+	const TEXT_COLOR = TERMINAL_TEXT_COLOR
 	const BORDER_COLOR = '#ffffff'
 	const SCREEN_COLOR = '#070b18'
 

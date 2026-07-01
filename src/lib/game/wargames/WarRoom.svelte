@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { FloorCredits, Player, Room, ROOM_D, ROOM_H, ROOM_W } from '@joshuafolkken/game-kit'
-	import { T } from '@threlte/core'
+	import { T, useThrelte } from '@threlte/core'
 	import { interactivity } from '@threlte/extras'
 	import { tic_tac_toe_game } from '$lib/game/tic-tac-toe/TicTacToeGame.svelte'
 	import { messages } from '$lib/messages'
 	import { onDestroy, onMount } from 'svelte'
+	import { NoToneMapping } from 'three'
 	import CenterScreen from './CenterScreen.svelte'
 	import {
 		FLOOR_CREDITS_COLOR,
@@ -50,6 +51,11 @@
 
 	// Enable pointer raycasting so the tic-tac-toe cells on the center screen are clickable.
 	interactivity()
+
+	// Threlte defaults the renderer to AgX tone mapping, which compresses white to ~0.8 and washes the
+	// color out of the bright screen text/borders (they read as grey-blue instead of the crisp white +
+	// vivid blue of the WarGames console). Disable it so the WOPR palette renders at its true values.
+	useThrelte().toneMapping.set(NoToneMapping)
 
 	onMount(() => {
 		side_display_state.start()

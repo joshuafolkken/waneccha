@@ -1,6 +1,7 @@
-// Fat-line materials for the HP1345A vector text (see ./Hp1345aText.svelte). The look is a crisp cyan
+// Fat-line materials for the HP1345A vector text (see ./Hp1345aText.svelte). The look is a crisp
 // display character with a slight light bleed — built from line geometry, not scene-wide bloom: the
-// cyan core stroke plus a few tight concentric halo layers.
+// core stroke plus a few tight concentric halo layers. The core color is set by the caller (see
+// Hp1345aText's `color` prop); this module only builds the geometry, blending, and halo ramp.
 //
 // Each halo layer uses MAX blending (CustomBlending + MaxEquation), NOT additive or normal alpha
 // blending. Adjacent fat-line segments meet with rounded caps at every glyph corner; translucent
@@ -25,9 +26,10 @@ const GLOW_BRIGHT_COLOR = '#4d6ed8'
 // Halo geometry as fractions of cap height. Many thin layers spaced LINEARLY from the widest outer
 // halo to the narrowest inner one — with the color ramp below and MAX blending, the stack reads as a
 // smooth gradient glow rather than a few visible bands. Widths are scaled to the text size at runtime.
+// A wide outer halo gives the letters the luminous CRT bloom of the WarGames console reference.
 const GLOW_LAYER_COUNT = 14
-const OUTER_GLOW_FRACTION = 0.19
-const INNER_GLOW_FRACTION = 0.05
+const OUTER_GLOW_FRACTION = 0.152
+const INNER_GLOW_FRACTION = 0.04
 const CORE_WIDTH_FRACTION = 0.038
 const RAMP_SPAN = GLOW_LAYER_COUNT - 1
 
@@ -43,11 +45,11 @@ function glow_layer_fraction(index: number): number {
 	return OUTER_GLOW_FRACTION + ratio * (INNER_GLOW_FRACTION - OUTER_GLOW_FRACTION)
 }
 
-// The halo's radial brightness follows a CONVEX curve (a sharp peak at the core with a long faint
-// tail) rather than a straight line. A linear color ramp reads as a solid "mound" of light — a raised
-// plateau around the stroke — instead of a soft glow. The exponent (>1) biases brightness toward the
-// inner (core-side) layers so most of the radius is faint and only the innermost layers are bright.
-const GLOW_RAMP_EXPONENT = 4
+// The halo's radial brightness follows a CONVEX curve (a peak at the core with a fading tail) rather
+// than a straight line. A linear color ramp reads as a solid "mound" of light — a raised plateau
+// around the stroke — instead of a glow. The exponent (>1) biases brightness toward the inner
+// (core-side) layers; a moderate value keeps a soft, wide luminous bloom like the CRT reference.
+const GLOW_RAMP_EXPONENT = 3
 
 function glow_ramp_t(index: number): number {
 	// index 0 = outermost/dimmest (t -> 0); the last index = innermost/brightest (t -> 1).

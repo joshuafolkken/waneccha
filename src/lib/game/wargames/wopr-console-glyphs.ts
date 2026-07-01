@@ -14,14 +14,15 @@
 import type { Point, Polyline } from './hp1345a-font'
 
 const GLYPH_STROKES: ReadonlyArray<readonly [string, string]> = [
-	// Vertical sides, chamfered head corners (same 3×2.5 slope as the P/R bowl corners) to a narrow
-	// flat top, mid crossbar.
-	['A', '0,0 0,15.5 3,18 9,18 12,15.5 12,0 | 0,7 12,7'],
+	// Vertical sides, 45° chamfered head corners (2×2, matching the P/R bowl corners) to a flat top,
+	// mid crossbar.
+	['A', '0,0 0,16 2,18 10,18 12,16 12,0 | 0,7 12,7'],
 	// Stem (inset to x=2) + two EQUAL right-bulging bowls; the top and bottom bars overhang LEFT of
 	// the stem to x=0.
 	['B', '2,0 2,18 | 1,18 10,18 12,16 12,11 10,9 2,9 | 1,0 10,0 12,2 12,7 10,9'],
-	// Octagonal C, open on the right.
-	['C', '11.5,14.5 9,18 3,18 0.5,14.5 0.5,3.5 3,0 9,0 11.5,3.5'],
+	// Octagonal C, open on the right. Its left side (verticals + 3.5×5.25 chamfers) matches O's left
+	// side, and both right claws use the same 45° 2×2 bend as G's top-right claw.
+	['C', '11,16 9,18 3.5,18 0,12.75 0,5.25 3.5,0 9,0 11,2'],
 	// Stem (inset to x=2) + single right-bulging bowl; top/bottom bars overhang LEFT to x=1, with the
 	// same 2×2 corner chamfers and right edge (x=12) as 'B' so the two share one style.
 	['D', '2,0 2,18 | 1,18 10,18 12,16 12,2 10,0 1,0'],
@@ -29,9 +30,10 @@ const GLYPH_STROKES: ReadonlyArray<readonly [string, string]> = [
 	['E', '11,18 0,18 0,0 11,0 | 0,9 5,9'],
 	// Like E without the bottom bar; short middle bar.
 	['F', '11,18 0,18 0,0 | 0,9 5,9'],
-	// Octagonal C with a horizontal inner bar at mid-right; the bottom-RIGHT corner is a square right
-	// angle (not chamfered), where the bottom bar meets the right side that rises to the inner bar.
-	['G', '11.5,14.5 9,18 3,18 0.5,14.5 0.5,3.5 3,0 11.5,0 11.5,8 7.5,8'],
+	// Octagonal C with a horizontal inner bar at mid-right; the top-RIGHT claw uses S's 45° 2×2 bend,
+	// the left side (verticals + 3.5×5.25 chamfers) matches O's left side, and the bottom-RIGHT corner
+	// is a square right angle (not chamfered) where the bottom bar meets the right side to the inner bar.
+	['G', '11,16 9,18 3.5,18 0,12.75 0,5.25 3.5,0 11.5,0 11.5,8 7.5,8'],
 	// Centred vertical stem with short horizontal serif bars top and bottom.
 	['I', '4,18 8,18 | 6,18 6,0 | 4,0 8,0'],
 	// Centred stem under a symmetric horizontal top bar (equal overhang each side), hooking left at
@@ -46,17 +48,22 @@ const GLYPH_STROKES: ReadonlyArray<readonly [string, string]> = [
 	['M', '0,0 0,18 6,9 12,18 12,0'],
 	// Vertical sides joined by the full diagonal.
 	['N', '0,0 0,18 12,0 12,18'],
-	// Closed octagon; the corner chamfers use the same 2:3 (dx:dy) slope as the M diagonals.
-	['O', '3,0 9,0 12,4.5 12,13.5 9,18 3,18 0,13.5 0,4.5 3,0'],
-	// Stem + chamfered bowl filling the upper half; bowl closes at y=9 (level with the H crossbar).
-	['P', '0,0 0,18 9,18 12,15.5 12,11.5 9,9 0,9'],
-	// Octagon (same 2:3 chamfers as O) + short diagonal tail at the lower right.
+	// Closed octagon; the four corner chamfers keep the 2:3 (dx:dy) slope of the M diagonals but run
+	// a touch longer (insets 3.5×5.25) so the diagonals read a little more prominently than Q's.
+	['O', '3.5,0 8.5,0 12,5.25 12,12.75 8.5,18 3.5,18 0,12.75 0,5.25 3.5,0'],
+	// Stem + 45°-chamfered (2×2) bowl filling the upper half; bowl closes at y=9 (level with the H
+	// crossbar).
+	['P', '0,0 0,18 10,18 12,16 12,11 10,9 0,9'],
+	// Octagon (2:3-slope corner chamfers, slightly shorter than O's) + short diagonal tail at the
+	// lower right.
 	['Q', '3,0 9,0 12,4.5 12,13.5 9,18 3,18 0,13.5 0,4.5 3,0 | 8,5 12,0'],
-	// Stem + upper bowl (closing at y=9, level with the H crossbar) + diagonal leg starting near the
-	// stem, angled down to the lower right.
-	['R', '0,0 0,18 | 0,18 8,18 11,15.5 11,11.5 8,9 0,9 | 2,9 11,0'],
-	// Segment S: horizontal top/middle/bottom bars, upper-left & lower-right verticals, corner chamfers.
-	['S', '11.5,15.5 10,18 2,18 0.5,15.5 0.5,10.5 2,9 10,9 11.5,7 11.5,2.5 10,0 2,0 0.5,2.5'],
+	// Stem + upper bowl identical to P's (45° 2×2 corners, right edge at the cell's x=12 so R spaces
+	// like P), closing at y=9 level with the H crossbar, + diagonal leg from right of the stem down to
+	// a foot lifted just off the baseline.
+	['R', '0,0 0,18 | 0,18 10,18 12,16 12,11 10,9 0,9 | 3,9 11,0.5'],
+	// Segment S: horizontal top/middle/bottom bars, upper-left & lower-right verticals; every corner
+	// chamfer is 45° 2×2, matching R's bowl. Point-symmetric about the centre.
+	['S', '11,16 9,18 3,18 1,16 1,11 3,9 9,9 11,7 11,2 9,0 3,0 1,2'],
 	// Top bar + centred stem.
 	['T', '0,18 12,18 | 6,18 6,0'],
 	// Vertical sides + chamfered base.
