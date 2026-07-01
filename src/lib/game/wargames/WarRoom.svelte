@@ -14,11 +14,8 @@
 		FLOOR_CREDITS_TEXT,
 		IS_FLOOR_CREDITS_ALT,
 	} from './floor-credits'
-	import Hp1345aText from './Hp1345aText.svelte'
 	import {
 		AMBIENT_INTENSITY,
-		BANNER_POS,
-		BANNER_SIZE,
 		CENTER_H,
 		CENTER_POS,
 		CENTER_W,
@@ -29,16 +26,21 @@
 		SIDE_H,
 		SIDE_ROT,
 		SIDE_W,
+		TERMINAL_H,
+		TERMINAL_POS,
+		TERMINAL_ROT,
+		TERMINAL_W,
 	} from './scene-layout'
 	import Screen from './Screen.svelte'
 	import { side_display_state } from './SideDisplayState.svelte'
 	import SideScreen from './SideScreen.svelte'
+	import TerminalScreen from './TerminalScreen.svelte'
 	import {
+		LIGHT_COLOR,
 		ROOM_CEILING_COLOR,
 		ROOM_FLOOR_COLOR,
 		ROOM_WALL_COLOR,
 		SCENE_BG_COLOR,
-		SCREEN_GLOW_COLOR,
 	} from './wargames-config'
 
 	// Shake the camera when a game finishes (WarGames drama).
@@ -60,8 +62,8 @@
 
 <T.Color attach="background" args={[SCENE_BG_COLOR]} />
 <Player is_gameover={is_over} />
-<T.AmbientLight intensity={AMBIENT_INTENSITY} color={SCREEN_GLOW_COLOR} />
-<T.PointLight position={POINT_POS} intensity={POINT_INTENSITY} color={SCREEN_GLOW_COLOR} />
+<T.AmbientLight intensity={AMBIENT_INTENSITY} color={LIGHT_COLOR} />
+<T.PointLight position={POINT_POS} intensity={POINT_INTENSITY} color={LIGHT_COLOR} />
 
 <Room
 	width={ROOM_W}
@@ -81,8 +83,6 @@
 	color={FLOOR_CREDITS_COLOR}
 />
 
-<Hp1345aText text={messages.norad_banner} position={BANNER_POS} size={BANNER_SIZE} />
-
 <Screen position={CENTER_POS} width={CENTER_W} height={CENTER_H}>
 	<CenterScreen title={messages.wopr_board_title} />
 </Screen>
@@ -94,3 +94,11 @@
 <Screen position={RIGHT_POS} rotation_y={-SIDE_ROT} width={SIDE_W} height={SIDE_H}>
 	<SideScreen id={side_display_state.right_id} width={SIDE_W} height={SIDE_H} />
 </Screen>
+
+<TerminalScreen
+	position={TERMINAL_POS}
+	rotation_y={TERMINAL_ROT}
+	width={TERMINAL_W}
+	height={TERMINAL_H}
+	text={messages.norad_banner}
+/>

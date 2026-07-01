@@ -15,7 +15,7 @@ test('NORAD banner renders in the HP1345A vector font', async ({ page }) => {
 	const banner = page.getByTestId('norad-banner')
 
 	await expect(banner).toBeAttached()
-	await expect(banner).toHaveText('NORAD')
+	await expect(banner).toHaveText('SHALL WE PLAY A GAME?')
 	await expect(page.locator('canvas')).toBeVisible()
 })
 

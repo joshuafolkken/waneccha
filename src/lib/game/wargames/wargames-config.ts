@@ -8,6 +8,9 @@ export const TERMINAL_FONT_FAMILY = 'VT323'
 // the room, screens, and operation screens all share one cyan hue family (issue #29).
 export const SCREEN_GLOW_COLOR = '#33ccff'
 export const SCREEN_DIM_COLOR = '#0a2933'
+// Neutral white room lighting — the cyan mood comes from the surface colors and glowing screens,
+// not a tinted light, so lit surfaces read with true color.
+export const LIGHT_COLOR = '#ffffff'
 // Canvas background behind the WOPR operation-screen text/graphics (side & center displays),
 // kept in the same dark-cyan family as the rest of the palette.
 export const SCREEN_CANVAS_BG_COLOR = '#02141a'

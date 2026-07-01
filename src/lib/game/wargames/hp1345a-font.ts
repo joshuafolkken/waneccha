@@ -8,6 +8,7 @@
 // Coordinate space (font units): x grows right, y grows up, the baseline sits at y = 0 and capitals
 // reach y = GLYPH_CAP_HEIGHT. Consumers scale by (world cap height / GLYPH_CAP_HEIGHT).
 import { INDEX_BYTES, STROKE_BYTES } from './hp1345a-rom'
+import { WOPR_CONSOLE_GLYPHS } from './wopr-console-glyphs'
 
 export type Point = readonly [number, number]
 export type Polyline = ReadonlyArray<Point>
@@ -82,7 +83,7 @@ function open_polyline(
 
 // Walk the stroke list for one glyph, accumulating relative deltas into absolute polylines. The dy
 // PEN_BIT ends the glyph; a zero pair is the empty/terminator entry.
-function decode_glyph(code: number): Array<Polyline> {
+function decode_rom_glyph(code: number): Array<Polyline> {
 	let address = stroke_address(code)
 	const polylines: Array<Array<Point>> = []
 	const visited = new Set<number>()
@@ -110,18 +111,29 @@ function decode_glyph(code: number): Array<Polyline> {
 	return polylines
 }
 
+// Resolve one glyph to absolute polylines: hand-authored WOPR console overrides take precedence
+// (returned as fresh copies so callers can't mutate the shared table), otherwise decode the ROM.
+function decode_glyph(code: number): Array<Polyline> {
+	const override = WOPR_CONSOLE_GLYPHS.get(code)
+	if (override) return override.map((line) => [...line])
+
+	return decode_rom_glyph(code)
+}
+
 // Lay a string out left to right, offsetting each glyph by GLYPH_ADVANCE. Returns absolute polylines
 // in font units; an unknown/blank glyph simply contributes no polylines but still advances the pen.
-function layout_text(text: string): Array<Polyline> {
+// `condense` (<1) scales each glyph's own width only; `letter_spacing` scales the GLYPH_ADVANCE pitch
+// between glyphs. Both default to 1, so glyph height stays fixed regardless.
+function layout_text(text: string, condense = 1, letter_spacing = 1): Array<Polyline> {
 	const polylines: Array<Polyline> = []
 	let index = 0
 
 	for (const character of text) {
-		const origin_x = index * GLYPH_ADVANCE
+		const origin_x = index * GLYPH_ADVANCE * letter_spacing
 		const strokes = decode_glyph(character.codePointAt(0) ?? 0)
 
 		for (const stroke of strokes) {
-			polylines.push(stroke.map(([x, y]) => [origin_x + x, y] as const))
+			polylines.push(stroke.map(([x, y]) => [origin_x + x * condense, y] as const))
 		}
 
 		index += 1
@@ -150,18 +162,46 @@ function to_segment_points(polylines: ReadonlyArray<Polyline>): Array<number> {
 	return points
 }
 
-// Build a flat THREE-ready position buffer ([x, y, z, ...], consecutive pairs = one segment) for a
-// string, scaled so capitals are `size` tall and centred on the origin (like troika anchor
-// center/middle), which keeps placement in the scene identical to the existing text components.
-function to_line_positions(text: string, size: number): Array<number> {
+// Layout options for laid-out text. align/valign default to 'center'/'middle' (troika-like, keeps
+// existing placements); 'left'/'top' anchors the block's top-left at the origin (terminal screens).
+// condense scales each glyph's width; letter_spacing scales the GLYPH_ADVANCE pitch; line_spacing
+// scales the LINE_SPACING_FACTOR — all default to 1 (no change).
+export interface TextLayout {
+	align?: 'center' | 'left'
+	valign?: 'middle' | 'top'
+	condense?: number
+	letter_spacing?: number
+	line_spacing?: number
+}
+
+const DEFAULT_LAYOUT: Required<TextLayout> = {
+	align: 'center',
+	valign: 'middle',
+	condense: 1,
+	letter_spacing: 1,
+	line_spacing: 1,
+}
+
+// Fill any omitted layout options with their defaults (keeps the layout funcs simple — no per-field
+// default branches inflating their complexity).
+function resolve_layout(layout: TextLayout): Required<TextLayout> {
+	return { ...DEFAULT_LAYOUT, ...layout }
+}
+
+// Build a flat THREE-ready position buffer ([x, y, z, ...], consecutive pairs = one segment) for one
+// line, scaled so capitals are `size` tall. 'center' centres the line on x=0; 'left' anchors its left
+// edge at x=0. The line is always centred on y=0 (callers stack lines via to_block_positions).
+function to_line_positions(text: string, size: number, layout: TextLayout = {}): Array<number> {
+	const { align, condense, letter_spacing } = resolve_layout(layout)
 	const scale = size / GLYPH_CAP_HEIGHT
-	const center_x = (text.length * GLYPH_ADVANCE) / CENTER_DIVISOR
+	const advance = GLYPH_ADVANCE * letter_spacing
+	const origin_x = align === 'left' ? 0 : (text.length * advance) / CENTER_DIVISOR
 	const center_y = GLYPH_CAP_HEIGHT / CENTER_DIVISOR
-	const flat = to_segment_points(layout_text(text))
+	const flat = to_segment_points(layout_text(text, condense, letter_spacing))
 	const positions: Array<number> = []
 
 	for (let index = 0; index < flat.length; index += COORDS_PER_VERTEX) {
-		const px = ((flat[index] ?? 0) - center_x) * scale
+		const px = ((flat[index] ?? 0) - origin_x) * scale
 		const py = ((flat[index + 1] ?? 0) - center_y) * scale
 
 		positions.push(px, py, 0)
@@ -170,9 +210,63 @@ function to_line_positions(text: string, size: number): Array<number> {
 	return positions
 }
 
+// Vertical distance between stacked text lines, as a multiple of the cap size.
+export const LINE_SPACING_FACTOR = 1.4
+const VERTEX_STRIDE = 3
+
+// y of the first line's centre: 'middle' centres the whole block on the origin; 'top' puts the first
+// line's top edge at y=0 so the block grows downward.
+function first_line_offset(
+	line_count: number,
+	step: number,
+	size: number,
+	valign: TextLayout['valign'],
+): number {
+	if (valign === 'top') return -size / CENTER_DIVISOR
+
+	return ((line_count - 1) * step) / CENTER_DIVISOR
+}
+
+// Lay out text that may contain '\n' as one position buffer: each line is anchored horizontally per
+// `layout.align`, then stacked top-to-bottom and offset vertically per `layout.valign`.
+function to_block_positions(text: string, size: number, layout: TextLayout = {}): Array<number> {
+	const { align, valign, condense, letter_spacing, line_spacing } = resolve_layout(layout)
+	const lines = text.split('\n')
+	const step = size * LINE_SPACING_FACTOR * line_spacing
+	const first_offset = first_line_offset(lines.length, step, size, valign)
+	const positions: Array<number> = []
+
+	for (const [index, line] of lines.entries()) {
+		const y_offset = first_offset - index * step
+		const line_positions = to_line_positions(line, size, { align, condense, letter_spacing })
+
+		for (let base = 0; base < line_positions.length; base += VERTEX_STRIDE) {
+			positions.push(line_positions[base] ?? 0, (line_positions[base + 1] ?? 0) + y_offset, 0)
+		}
+	}
+
+	return positions
+}
+
+// Largest cap size at which `text` fits inside a content box: bounded by its longest line (width) and
+// its line count incl. blank lines (height). Lets a screen auto-shrink text to always fit.
+function fit_size(text: string, content_width: number, content_height: number): number {
+	const lines = text.split('\n')
+	const max_chars = Math.max(...lines.map((line) => line.length))
+	const width_size =
+		max_chars > 0
+			? (content_width * GLYPH_CAP_HEIGHT) / (max_chars * GLYPH_ADVANCE)
+			: content_height
+	const height_factor = (lines.length - 1) * LINE_SPACING_FACTOR + 1
+
+	return Math.min(width_size, content_height / height_factor)
+}
+
 export const hp1345a_font = {
 	decode_glyph,
 	layout_text,
 	to_segment_points,
 	to_line_positions,
+	to_block_positions,
+	fit_size,
 }
