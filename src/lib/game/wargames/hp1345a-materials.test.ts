@@ -1,8 +1,18 @@
 import { CustomBlending, MaxEquation, NormalBlending } from 'three'
+import type { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import { describe, expect, it } from 'vitest'
 import { hp1345a_materials } from './hp1345a-materials'
 
+// Peak channel (perceived brightness) of the glow layer at `index`, 0 when the layer is missing.
+function luminance_at(layers: Array<LineMaterial>, index: number): number {
+	const color = layers.at(index)?.color
+
+	return color ? Math.max(color.r, color.g, color.b) : 0
+}
+
 const DOUBLE = 2
+// The widest halo must be at least this multiple of the core width — a genuine bloom, not a tight rim.
+const MIN_HALO_MULTIPLE = 3
 // Max per-channel byte the widest halo may reach so MAX-blending it over the dark screen is a no-op
 // and leaves no outer ring (0..255). Pure black (0) passes; a non-zero dim end like #0a1226 (blue
 // 0x26 = 38) sits above the screen color and would show an edge, so it must fail this.
@@ -41,15 +51,9 @@ describe('hp1345a_materials.create', () => {
 	it('eases glow brightness toward the core so the halo falls off convexly (regression: light mound)', () => {
 		const { glow_layers } = hp1345a_materials.create()
 
-		function luminance_at(index: number): number {
-			const color = glow_layers.at(index)?.color
-
-			return color ? Math.max(color.r, color.g, color.b) : 0
-		}
-
-		const outer = luminance_at(0)
-		const inner = luminance_at(-1)
-		const middle = luminance_at(Math.floor(glow_layers.length / DOUBLE))
+		const outer = luminance_at(glow_layers, 0)
+		const inner = luminance_at(glow_layers, -1)
+		const middle = luminance_at(glow_layers, Math.floor(glow_layers.length / DOUBLE))
 
 		// A linear ramp would put the middle layer at the midpoint; the convex ease biases it dimmer.
 		expect(middle).toBeLessThan((outer + inner) / DOUBLE)
@@ -86,5 +90,15 @@ describe('hp1345a_materials.apply_size', () => {
 
 		hp1345a_materials.apply_size(materials, DOUBLE)
 		expect(materials.glow_layers.at(0)?.linewidth ?? 0).toBeCloseTo(base * DOUBLE)
+	})
+
+	it('spreads a wide luminous halo well beyond the core', () => {
+		const materials = hp1345a_materials.create()
+
+		hp1345a_materials.apply_size(materials, 1)
+		const outer = materials.glow_layers.at(0)?.linewidth ?? 0
+
+		// The outer halo is several times the core width — a real bloom, not a tight hug.
+		expect(outer).toBeGreaterThan(materials.core.linewidth * MIN_HALO_MULTIPLE)
 	})
 })
