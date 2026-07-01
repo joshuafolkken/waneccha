@@ -1,7 +1,7 @@
 import { base_messages } from '@joshuafolkken/game-kit'
 import { game_config } from './game-config'
 
-// The WOPR's signature line — shown both on the NORAD banner and as the tic-tac-toe prompt.
+// The WOPR's signature line, used as the tic-tac-toe prompt.
 const WOPR_GAME_PROMPT = 'SHALL WE PLAY A GAME?'
 
 const game_messages = {
