@@ -15,7 +15,6 @@ const INDEX_ROM_BASE64 =
 // `Uint8Array.fromBase64` is too new for the Cloudflare Workers runtime and CI Node, so decode with
 // the portable `atob` (available in browsers, Workers, and Node alike).
 function bytes_from_base64(encoded: string): Uint8Array {
-	// eslint-disable-next-line unicorn/prefer-uint8array-base64 -- fromBase64 unavailable at runtime
 	const binary = atob(encoded)
 	const bytes = new Uint8Array(binary.length)
 
